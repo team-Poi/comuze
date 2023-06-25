@@ -1,0 +1,10 @@
+.section > * {
+  margin-left: 1.5rem;
+}
+.section > *:first-child {
+  margin: 0px;
+}
+.section {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
