@@ -34,12 +34,20 @@ export default function Page() {
               <div>{data.user.id}</div>
             </div>
           )}
+
           {data?.user.name && (
             <div className={styles.section}>
               <h2>User name</h2>
               <div>{data.user.name}</div>
             </div>
           )}
+          {data?.user.nickname && (
+            <div className={styles.section}>
+              <h2>Nickname</h2>
+              <div>{data.user.nickname}</div>
+            </div>
+          )}
+
           {data?.user.image && (
             <div className={styles.section}>
               <h2>User icon</h2>
@@ -63,6 +71,7 @@ export default function Page() {
               <div>{data.user.email}</div>
             </div>
           )}
+
           {data?.user.age && (
             <div className={styles.section}>
               <h2>User age</h2>
@@ -76,7 +85,13 @@ export default function Page() {
           {data?.user.school && (
             <div className={styles.section}>
               <h2>User school</h2>
-              <div>{data.user.school.toString()}</div>
+              <div>{data.user.school}</div>
+            </div>
+          )}
+          {data?.user.classNumber && (
+            <div className={styles.section}>
+              <h2>Class number</h2>
+              <div>{data.user.classNumber}</div>
             </div>
           )}
         </div>
