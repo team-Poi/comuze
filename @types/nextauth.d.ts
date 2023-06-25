@@ -6,7 +6,9 @@ declare module "next-auth" {
       id: string;
       age?: number;
       isAdmin?: boolean;
-      school?: BigInt;
+      school?: string;
+      nickname?: string;
+      classNumber?: number;
     } & DefaultSession["user"];
   }
 }

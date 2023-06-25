@@ -1,8 +1,9 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth, { AuthOptions, Session } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/utils/prisma";
-import { Adapter } from "next-auth/adapters";
+import { Adapter, AdapterUser } from "next-auth/adapters";
 import Auth0Provider from "next-auth/providers/auth0";
+import { User } from "@prisma/client";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -14,12 +15,19 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token, user }: any) => {
-      if (session?.user) {
+    session: (async ({ session, user }: { session: Session; user: User }) => {
+      console.log(user);
+      if (session.user) {
         session.user.id = user.id;
+        session.user.nickname = user.nickname ? user.nickname : undefined;
+        session.user.age = user.age ? user.age : undefined;
+        session.user.school = user.school ? user.school : undefined;
+        session.user.classNumber = user.classNumber
+          ? user.classNumber
+          : undefined;
       }
       return session;
-    },
+    }) as any,
   },
 };
 
