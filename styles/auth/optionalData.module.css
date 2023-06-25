@@ -1,0 +1,20 @@
+.stepWrapper {
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: min(400px, 95vw);
+  width: fit-content;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+}
+
+.stepDescription {
+  opacity: 0.5;
+}
+
+.stepTitle {
+  font-size: 1.8rem;
+  margin: 1rem 0px;
+}
