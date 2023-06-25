@@ -1,3 +1,8 @@
 * {
   font-family: var(--POI-UI-FONT);
 }
+
+strong {
+  font-family: var(--POI-UI-FONT-BOLD);
+  font-weight: bold;
+}
