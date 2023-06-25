@@ -59,11 +59,15 @@ export default async function handler(
 
   try {
     var URL = encodeURI(
-      `https://open.neis.go.kr/hub/schoolInfo?Type=json&pIndex=1&pSize=${INDEX_MAX}&KEY=${KEY}&SCHUL_NM=${schoolName}`
+      `https://open.neis.go.kr/hub/schoolInfo?Type=json&pIndex=1&pSize=${Math.min(
+        parseInt((req.query.count as string) || INDEX_MAX || "30"),
+        parseInt(INDEX_MAX!)
+      )}&KEY=${KEY}&SCHUL_NM=${schoolName}`
     );
     var { data } = await axios.get(URL);
-
-    res.status(200).json(
+    if (data?.RESULT?.MESSAGE == "해당하는 데이터가 없습니다.")
+      return res.send([]);
+    res.send(
       data.schoolInfo[1].row.map((j: NeisAPIResult): SearchApiResult => {
         return {
           지역코드: j.ATPT_OFCDC_SC_CODE,
