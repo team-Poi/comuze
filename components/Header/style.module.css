@@ -61,3 +61,82 @@
   width: 100%;
   height: auto;
 }
+
+.menuToggle {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sideMenu {
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  width: min(95vw, 400px);
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: auto;
+  transition: all 0.2s ease;
+  transform: translateX(100%);
+  background-color: white;
+  z-index: 3;
+  padding: 2rem 1rem;
+  user-select: none;
+
+  border-radius: 1rem 0px 0px 1rem;
+}
+
+.menuBG {
+  z-index: 2;
+
+  user-select: none;
+  transition: all 0.2s ease;
+  pointer-events: none;
+
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  backdrop-filter: blur(0px);
+
+  transform: translate(-50%, -50%) translateX(2rem);
+
+  border-radius: 1rem;
+}
+
+.menuBG.enabled {
+  background-color: rgba(0, 0, 0, 0.2);
+  pointer-events: all;
+  backdrop-filter: blur(4px);
+  transform: translate(-50%, -50%) translateX(0px);
+
+  border-radius: 0px;
+}
+
+.menuTitle {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.welcome {
+  font-size: 1.5rem;
+}
+
+.menuLink {
+  color: rgb(65, 64, 64);
+  text-decoration: none;
+  padding-left: 10px;
+  font-size: 1.15rem;
+  margin: 0.1rem 0px;
+}
+
+.spacer {
+  height: 0.55rem;
+}
+.void {
+  padding-top: 50px;
+}
