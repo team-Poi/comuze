@@ -1,6 +1,9 @@
+import { Garo } from "@/components/Garo";
+import { Loading } from "@/components/Loading";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import styles from "@/styles/auth/loader.module.css";
 
 export default function Page() {
   let { status } = useSession();
@@ -14,5 +17,9 @@ export default function Page() {
     router.push("/");
     return;
   }, [status, router]);
-  return <>Redirecting to Auth0...</>;
+  return (
+    <Garo className={styles.loading}>
+      <Loading />
+    </Garo>
+  );
 }
