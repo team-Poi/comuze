@@ -48,6 +48,7 @@ model User {
   school String?
   age Int?
   classNumber Int?
+  nickname String?
 }
 
 model VerificationToken {
