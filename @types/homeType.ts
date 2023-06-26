@@ -1,8 +1,8 @@
-type HomeType = "MAIN" | "AUTH";
+type HomeType = "MAIN" | "DEBUG";
 
 const IconDefine: { [key in HomeType]: string } = {
   MAIN: "error_med",
-  AUTH: "key",
+  DEBUG: "dns",
 };
 
 export default HomeType;
