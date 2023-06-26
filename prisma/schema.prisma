@@ -45,16 +45,16 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  school String?
+  schoolId String?
   age Int?
   classNumber Int?
   nickname String?
+  phoneNum String?
 }
 
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }
