@@ -1,5 +1,5 @@
 const CONSTANTS = {
-  SERVICE_NAME: "Comuez",
+  SERVICE_NAME: "Comuze",
 };
 
 export default CONSTANTS;
