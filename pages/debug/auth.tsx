@@ -8,7 +8,7 @@ export default function Page() {
 
   return (
     <div>
-      <Header featureType="auth" type="AUTH" />
+      <Header featureType="debug" type="DEBUG" />
       <Conatiner>
         <div className={styles.section}>
           <h2>Authenticated</h2>
