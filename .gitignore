@@ -36,3 +36,6 @@ next-env.d.ts
 
 # Yarn data
 yarn.lock
+
+.env
+.server.js
