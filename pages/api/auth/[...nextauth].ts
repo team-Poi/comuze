@@ -16,12 +16,11 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     session: (async ({ session, user }: { session: Session; user: User }) => {
-      console.log(user);
       if (session.user) {
         session.user.id = user.id;
         session.user.nickname = user.nickname ? user.nickname : undefined;
         session.user.age = user.age ? user.age : undefined;
-        session.user.school = user.school ? user.school : undefined;
+        session.user.school = user.schoolId ? user.schoolId : undefined;
         session.user.classNumber = user.classNumber
           ? user.classNumber
           : undefined;
