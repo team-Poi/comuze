@@ -82,7 +82,8 @@ export default function Header(props: HeaderProps) {
           {status != "loading" && status == "authenticated" ? (
             <>
               <div className={styles.welcome}>
-                <strong>{data?.user.name}</strong>님 안녕하세요!
+                <strong>{data?.user.nickname || data?.user.name}</strong>님
+                안녕하세요!
               </div>
 
               <div className={styles.spacer} />
@@ -92,6 +93,18 @@ export default function Header(props: HeaderProps) {
               </Link>
               <Link href="/auth/signout" className={styles.menuLink}>
                 로그아웃
+              </Link>
+              <div className={styles.spacer} />
+              <div className={classNames(styles.welcome, styles.void)}>
+                <strong>커뮤니티</strong>
+              </div>
+              <div className={styles.spacer}></div>
+              <Link href="/" className={styles.menuLink}>
+                게시판
+              </Link>
+              <div className={styles.spacer}></div>
+              <Link href="/" className={styles.menuLink}>
+                글 쓰기
               </Link>
               <div className={styles.spacer} />
               <div className={classNames(styles.welcome, styles.void)}>
