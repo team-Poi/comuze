@@ -11,7 +11,9 @@ export default function Page() {
   useEffect(() => {
     if (status == "loading") return;
     if (status == "unauthenticated") {
-      signIn("auth0");
+      signIn("auth0", {
+        callbackUrl: "/",
+      });
       return;
     }
     router.push("/");
