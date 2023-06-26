@@ -10,6 +10,8 @@
   border-radius: 0.5rem;
   padding: 1rem 2rem;
   max-height: 90vh;
+
+  box-shadow: var(--nextui-shadows-sm);
 }
 
 .stepDescription {
@@ -88,4 +90,13 @@
 .gradeInputs {
   display: flex;
   align-items: center;
+}
+
+.signout {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  color: #777;
+  cursor: pointer;
 }

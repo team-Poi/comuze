@@ -6,11 +6,12 @@ import { Saero } from "@/components/Saero";
 import { Garo } from "@/components/Garo";
 import { SearchApiResult } from "../api/neis/search/school";
 import debounceFunction from "@/utils/debounce";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import classNames from "@/utils/classNames";
 import { Flex } from "@/components/Flex";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface StepProps {
   next: () => void;
@@ -57,22 +58,63 @@ function Step1(
     setNickname: React.Dispatch<React.SetStateAction<string>>;
   }
 ) {
-  const [Phone, SetPhone] = useState("");
+  const [errored, setErrored] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const next_ = () => {
-    if (props.nickname) props.next();
-    else {
-      toast.error("닉네임을 입력해주세요!");
-    }
+    if (fetching) return;
+    if (!props.nickname) return toast.error("닉네임을 입력해주세요!");
+    let toastId = toast.loading("닉네임을 검사중이에요");
+    setFetching(true);
+    axios
+      .post("/api/auth/nickname", {
+        nickname: props.nickname,
+      })
+      .then(({ data }) => {
+        if (data.s == true) {
+          toast.update(toastId, {
+            render: "이용가능한 닉네임이네요!",
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
+          return props.next();
+        }
+        let errorMessage = "";
+        if (data.e == 1) errorMessage = "사용중인 닉네임이에요";
+        if (data.e == 2) errorMessage = "부적절한 닉네임이에요";
+        toast.update(toastId, {
+          render: errorMessage,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setErrored(true);
+      })
+      .catch((e) => {
+        toast.update(toastId, {
+          render: "닉네임 검사중 에러가 발생했어요.",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      })
+      .finally(() => {
+        setFetching(false);
+      });
   };
   return (
     <div>
       <StepTitle>어떻게 부를까요?</StepTitle>
       <StepDescription>
-        자신만의 개성넘치는 닉네임을 정해주세요. 다른사람이 볼수있어요!
+        자신만의 개성넘치는 닉네임을 정해주세요. 다른사람들이 볼 수 있으니
+        피해가 가지 않는 이름을 정해주세요.
       </StepDescription>
       <Input
         value={props.nickname}
-        onChange={(e) => props.setNickname(e.currentTarget.value)}
+        onChange={(e) => {
+          if (fetching) return;
+          props.setNickname(e.currentTarget.value);
+        }}
         placeholder="닉네임"
         onKeyPress={(e) => {
           if (e.key === "Enter") {
@@ -81,7 +123,9 @@ function Step1(
         }}
         css={{
           margin: "1rem 0px",
+          marginBottom: "0px",
         }}
+        color={errored ? "ERROR" : "PRIMARY"}
       />
       <Button
         onClick={next_}
@@ -303,6 +347,27 @@ function Step4(
         css={{
           margin: "1rem 0px",
         }}
+        value={props.phone}
+        onChange={(e) => {
+          const regex = /^[0-9\b -]{0,13}$/;
+          if (regex.test(e.currentTarget.value)) {
+            let inputValue = e.currentTarget.value;
+            props.setphone(inputValue);
+
+            if (inputValue.length === 10) {
+              props.setphone(
+                inputValue.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")
+              );
+            }
+            if (inputValue.length === 13) {
+              props.setphone(
+                inputValue
+                  .replace(/-/g, "")
+                  .replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+              );
+            }
+          }
+        }}
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             props.next();
@@ -342,6 +407,18 @@ function StepEnd() {
   );
 }
 
+function StepError() {
+  return (
+    <div>
+      <StepTitle>이런...</StepTitle>
+      <StepDescription>
+        알수없는 오류가 발생했어요. 페이지를 새로고침하거나 브라우저를 재시작
+        해보세요!
+      </StepDescription>
+    </div>
+  );
+}
+
 function StepWrapper({
   children,
   enabled,
@@ -373,12 +450,12 @@ export default function Page() {
 
   let router = useRouter();
 
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     setStep((j) => {
       router.push(`/auth/optionalSet?step=${j + 1}`);
       return j + 1;
     });
-  };
+  }, [router]);
 
   const prvStep = useCallback(() => {
     setStep((j) => {
@@ -386,16 +463,31 @@ export default function Page() {
       return j - 1;
     });
   }, [router]);
+
   useEffect(() => {
     (window as any).nextstep = nextStep;
   });
+
   useEffect(() => {
     window.onpopstate = (e) => {
       e.preventDefault();
       if (step <= 0) router.back();
-      else prvStep();
+      else {
+        if (e.state.url.startsWith("/auth/optionalSet?step=")) {
+          if (step == 5) return router.push(`/auth/optionalSet?step=5`);
+          let nextStepIndex = parseInt(
+            e.state.url.replace("/auth/optionalSet?step=", "")
+          );
+          if (step < nextStepIndex) nextStep();
+          else prvStep();
+          return;
+        }
+      }
     };
-  }, [prvStep, router, router.events, step]);
+    return () => {
+      window.onpopstate = (e) => {};
+    };
+  }, [nextStep, prvStep, router, router.events, step]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -405,8 +497,57 @@ export default function Page() {
     }
   }, [router]);
 
+  useEffect(() => {
+    router.replace("/auth/optionalSet?step=1");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", (e) => {
+      e.returnValue = "저장되지 않은 정보는 사라져요! 그래도 나갈까요?";
+    });
+  }, []);
+
+  useEffect(() => {
+    if (step != 5) return;
+    if (!school) return;
+    if (!grade) return;
+    if (!nickname) return;
+
+    let age =
+      school.학교구분 === "고등학교"
+        ? 16
+        : school.학교구분 === "중학교"
+        ? 13
+        : school.학교구분 === "초등학교"
+        ? 7
+        : 0;
+    age += grade;
+    axios
+      .post("/api/auth/optionalSet", {
+        phoneNumber: phone,
+        schoolCode: school.학교코드,
+        nickname: nickname,
+        age: age,
+        classNum: class_,
+      })
+      .then(({ data }) => {
+        if (data.s === true) {
+          router.push("/");
+        } else {
+          toast.error(data.e);
+          setStep(-1);
+        }
+      });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   return (
     <div style={{}}>
+      <StepWrapper enabled={step == -1}>
+        <StepError />
+      </StepWrapper>
       <StepWrapper enabled={step == 1}>
         <Step1
           prv={() => {}}
@@ -440,7 +581,9 @@ export default function Page() {
       <StepWrapper enabled={step == 5}>
         <StepEnd />
       </StepWrapper>
-      <ToastContainer />
+      <Link href={"/auth/signout"}>
+        <div className={styles.signout}>로그아웃</div>
+      </Link>
     </div>
   );
 }
