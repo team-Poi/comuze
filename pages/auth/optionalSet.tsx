@@ -559,6 +559,7 @@ export default function Page() {
                       width: "100%",
                     }}
                     onClick={() => {
+                      props.close();
                       axios
                         .post("/api/auth/optionalSet", {
                           phoneNumber: phone,
@@ -572,12 +573,10 @@ export default function Page() {
                           if (data.s === true) {
                             update().then(() => {
                               router.push("/");
-                              props.close();
                             });
                           } else {
                             toast.error(data.e);
                             setStep(-1);
-                            props.close();
                           }
                         });
                     }}
