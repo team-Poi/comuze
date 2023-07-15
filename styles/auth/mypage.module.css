@@ -1,0 +1,70 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.upper {
+  position: relative;
+  height: 30%;
+  background-color: #f8f8f8;
+  padding: 15px;
+}
+.title {
+  font-size: 2.25rem;
+}
+.subtitle {
+  padding: 10px;
+  font-size: 1.75rem;
+}
+.borderBottomServiceName {
+  border: none;
+  outline: none;
+  border-bottom: 3px solid var(--POI-UI-INFO);
+  font-size: 1em;
+  padding: 0px 1rem;
+  width: fit-content;
+  display: inline-block;
+}
+.serviceName {
+  font-size: 1em;
+  text-align: center;
+  margin: 0px;
+}
+.nick {
+  margin: 20px;
+  font-size: 0.65em;
+}
+.lower {
+  position: relative;
+  height: 70%;
+  margin: 2.5rem 0px;
+}
+
+.EditInfo {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  padding: 8px 14px;
+}
+.EditInfo:hover {
+  transform: translateX(-5px) scale(1) !important;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+}
+.section {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 0.5rem;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 767px) {
+  .garo {
+    flex-direction: column !important;
+    row-gap: 12px;
+  }
+}
+
+.divider {
+  margin-left: 5px;
+  width: 2px;
+  background-color: rgba(0, 0, 0, 0.5);
+}

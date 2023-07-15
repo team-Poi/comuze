@@ -4,52 +4,19 @@ import axios from "axios";
 import styles from "@/styles/auth/optionalData.module.css";
 import { Saero } from "@/components/Saero";
 import { Garo } from "@/components/Garo";
-import { SearchApiResult } from "../api/neis/search/school";
+import { SearchApiResult } from "@/nies/fetchSchool";
 import debounceFunction from "@/utils/debounce";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import classNames from "@/utils/classNames";
 import { Flex } from "@/components/Flex";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { StepDescription, StepTitle, SchoolItem } from "./changeSchool";
 
 interface StepProps {
   next: () => void;
   prv: () => void;
-}
-
-function StepTitle({ children }: React.PropsWithChildren<{}>) {
-  return <div className={styles.stepTitle}>{children}</div>;
-}
-
-function StepDescription({ children }: React.PropsWithChildren<{}>) {
-  return <div className={styles.stepDescription}>{children}</div>;
-}
-
-function SchoolItem({
-  item,
-  enabled,
-  index,
-  onClick,
-}: {
-  item: SearchApiResult;
-  enabled: boolean;
-  index: number;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      className={classNames(styles.fadein, styles.schoolItem)}
-      style={{
-        opacity: enabled ? "1" : "0",
-        animationDuration: `calc(0.3s + 0.05s * ${index})`,
-      }}
-      onClick={onClick}
-    >
-      <div>{item.학교명}</div>
-      <div className={styles.schoolAdress}>{item.도로번주소}</div>
-    </div>
-  );
 }
 
 function Step1(
@@ -148,6 +115,8 @@ function Step2(
   const [schoolList, setSchoolList] = useState<SearchApiResult[]>([]);
   const [loading, setLoading] = useState(false);
 
+  console.log(schoolList);
+
   const doRequest = (
     query: string,
     callback: (res: SearchApiResult[]) => void
@@ -155,7 +124,8 @@ function Step2(
     axios
       .get(`/api/neis/search/school?schoolName=${query}&count=5`)
       .then((v) => {
-        callback(v.data);
+        if (v.data.data == null) return callback([]);
+        callback(v.data.data);
       })
       .finally(() => {
         setLoading(false);
@@ -172,6 +142,8 @@ function Step2(
   useEffect(() => {
     doRequest("", setSchoolList);
   }, []);
+
+  console.log(schoolList);
 
   return (
     <div>
@@ -195,7 +167,8 @@ function Step2(
         gap={4}
         className={classNames(
           styles.schoolList,
-          optCSS(loading, styles.loading)
+          optCSS(loading, styles.loading),
+          optCSS(loading, "skeleton")
         )}
       >
         {schoolList.map((school, i) => (
@@ -289,9 +262,12 @@ function Step3(
             value={props.grade || ""}
             onChange={(e) => props.setgrade(parseInt(e.currentTarget.value))}
             onKeyPress={(e) => {
-              if (e.key === "Enter")
+              if (e.key === "Enter") {
                 (document.querySelector("#inputa") as HTMLInputElement)?.blur();
-              (document.querySelector("#inputb") as HTMLInputElement)?.focus();
+                (
+                  document.querySelector("#inputb") as HTMLInputElement
+                )?.focus();
+              }
             }}
           />
         </Flex>
@@ -441,6 +417,7 @@ function StepWrapper({
 
 export default function Page() {
   let [step, setStep] = useState(1);
+  let { update, status, data } = useSession();
 
   let [school, setSchool] = useState<SearchApiResult | null>(null);
   let [nickname, setNickname] = useState("");
@@ -509,6 +486,14 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    if (status == "authenticated" && data?.user.age) {
+      window.onbeforeunload = null;
+      router.push("/auth/mypage");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, data?.user.age]);
+
+  useEffect(() => {
     if (step != 5) return;
     if (!school) return;
     if (!grade) return;
@@ -530,10 +515,13 @@ export default function Page() {
         nickname: nickname,
         age: age,
         classNum: class_,
+        schoolName: school.학교명,
       })
       .then(({ data }) => {
         if (data.s === true) {
-          router.push("/");
+          update().then(() => {
+            router.push("/");
+          });
         } else {
           toast.error(data.e);
           setStep(-1);

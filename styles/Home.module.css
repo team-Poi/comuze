@@ -1,5 +1,68 @@
-.main {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+.section {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4rem 0px;
+}
+
+.makeSchoolLike {
+  background-image: linear-gradient(
+    112deg,
+    var(--nextui-colors-red600) -63.59%,
+    var(--nextui-colors-cyan600) -20.3%,
+    var(--nextui-colors-yellow600) 70.46%
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  border: none;
+  outline: none;
+}
+
+.headTitle {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.serviceNameContainer {
+  text-align: center;
+  font-size: 3rem;
+}
+
+.serviceName {
+  font-size: 1.5em;
+  text-align: center;
+  margin: 0px;
+}
+
+@media (max-width: 768px) {
+  .headTitle,
+  .serviceNameContainer {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .headTitle,
+  .serviceNameContainer {
+    font-size: 1.7rem;
+  }
+}
+
+.borderBottomServiceName {
+  border: none;
+  outline: none;
+  border-bottom: 4px solid var(--POI-UI-INFO);
+  font-size: 1em;
+  padding: 0px 1rem;
+  width: fit-content;
+  display: inline-block;
+}
+
+.cursor {
+  font-family: var(--POI-UI-FONT);
+  margin-left: 0.3rem;
+}
+
+.smaller {
+  font-size: 0.75em;
 }

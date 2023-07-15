@@ -7,6 +7,10 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css";
+import Head from "next/head";
+import { LoadingProvider } from "@/hooks/Loading";
+
 function Wrapper({ Component, pageProps }: AppProps) {
   let { status, data } = useSession();
   let router = useRouter();
@@ -22,16 +26,24 @@ function Wrapper({ Component, pageProps }: AppProps) {
 
   return (
     <ModalProvider>
-      <Component {...pageProps} />
-      <ToastContainer autoClose={3000} />
+      <LoadingProvider>
+        <Component {...pageProps} />
+        <ToastContainer autoClose={3000} />
+      </LoadingProvider>
     </ModalProvider>
   );
 }
 
 export default function App(props: AppProps) {
   return (
-    <SessionProvider session={props.pageProps.session}>
-      <Wrapper {...props} />
-    </SessionProvider>
+    <>
+      <Head>
+        <meta property="og:title" content="Comuze / 학교 생활을 더 즐겁게" />
+        <title>Comuze / 학교 생활을 더 즐겁게</title>
+      </Head>
+      <SessionProvider session={props.pageProps.session}>
+        <Wrapper {...props} />
+      </SessionProvider>
+    </>
   );
 }

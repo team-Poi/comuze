@@ -10,21 +10,21 @@ datasource db {
 // Next Auth
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @unique
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String  @unique
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([provider, providerAccountId])
 }
 
@@ -45,16 +45,92 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  schoolId String?
-  age Int?
+  isAdmin Boolean @default(false)
+
+  registeredAt DateTime @default(now())
+
+  schoolId    String?
+  age         Int?
   classNumber Int?
-  nickname String?
-  phoneNum String?
+  nickname    String?
+  phoneNum    String?
+
+  qpoint Int @default(0)
+
+  posts Post[]
+  chats Chat[]
+
+  myLikes Like[]
 }
 
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
+}
+
+model Post {
+  id         Int      @id @unique @default(autoincrement())
+  content    String
+  title      String
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+  uploadedAt DateTime @default(now())
+
+  onlyAuthorChat Boolean @default(false)
+  chats      Chat[]
+
+  likes Like[]
+
+  categoryID Int
+  category   Category @relation(fields: [categoryID], references: [id])
+}
+
+model Like {
+  id String @id @unique @default(cuid())
+  
+  author User @relation(references: [id],fields: [authorID])
+  post Post @relation(references: [id],fields: [postID])
+
+  postID Int
+  authorID String
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(24)
+  show Boolean @default(true)
+  posts Post[]
+}
+
+model Chat {
+  id String @id @unique @default(cuid())
+
+  postID Int
+  post   Post @relation(fields: [postID], references: [id])
+
+  content  String
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorkey Int @default(autoincrement())
+
+  uploadedAt DateTime @default(now())
+}
+
+model School {
+  id String @unique
+  areaCode String
+  office String
+  schoolName String
+  schoolEngName String
+  schoolType String
+  city String
+  eduDiv String
+  releaseType String
+  address String
+  phoneNumber String
+  url String
+  genderDiv String
 }

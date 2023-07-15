@@ -1,0 +1,53 @@
+.errorFace {
+  font-size: 160px;
+  color: #dadce0;
+  margin: 2rem 0px;
+}
+
+@media (max-width: 720px) {
+  .errorFace {
+    font-size: 100px;
+  }
+}
+
+@media (max-width: 460px) {
+  .errorFace {
+    font-size: 60px;
+  }
+}
+
+.h1 {
+  margin-bottom: 0px;
+}
+
+.h2 {
+  margin-top: 0px;
+  margin-bottom: 3rem;
+  color: rgb(128, 128, 128, 0.6);
+}
+
+.titleSpan {
+  border-bottom: var(--POI-UI-INFO) 2px solid;
+  font-family: var(--POI-UI-FONT-BOLD);
+}
+
+.centerFlex {
+  justify-content: center;
+  align-items: center;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.h100 {
+  height: 100%;
+}
+
+.tcenter {
+  text-align: center;
+}
+
+.bold {
+  font-family: var(--POI-UI-FONT-BOLD);
+}

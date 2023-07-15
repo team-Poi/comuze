@@ -1,0 +1,3 @@
+.post:hover {
+  border-left: 1px solid var(--POI-UI-INFO);
+}

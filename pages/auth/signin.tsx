@@ -9,6 +9,7 @@ export default function Page() {
   let { status } = useSession();
   let router = useRouter();
   useEffect(() => {
+    console.log("Hi");
     if (status == "loading") return;
     if (status == "unauthenticated") {
       signIn("auth0", {

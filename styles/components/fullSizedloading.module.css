@@ -1,0 +1,29 @@
+.loading {
+  z-index: 1234;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.loading.enabled {
+  pointer-events: all;
+  opacity: 1;
+  transform: none;
+}
+
+.main {
+  background-color: white;
+  width: 64px;
+  height: 64px;
+  box-sizing: content-box;
+  padding: 12px;
+  border-radius: 50%;
+  overflow: hidden;
+}

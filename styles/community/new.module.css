@@ -1,0 +1,32 @@
+.editor {
+  transition: all 0.2s ease;
+  max-height: fit-content;
+  opacity: 1;
+  transform: none;
+}
+
+.editor.notLoaded {
+  opacity: 0;
+  transform: translateY(15px);
+  max-height: 0px;
+}
+
+.loading {
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(15px);
+  position: absolute;
+  max-height: 0px;
+
+  box-sizing: border-box;
+  position: relative;
+}
+
+.loading.notLoaded {
+  opacity: 1;
+  transform: none;
+  max-height: fit-content;
+}

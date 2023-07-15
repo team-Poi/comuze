@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions, Session } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/utils/prisma";
-import { Adapter, AdapterUser } from "next-auth/adapters";
+import { Adapter } from "next-auth/adapters";
 import Auth0Provider from "next-auth/providers/auth0";
 import { User } from "@prisma/client";
 
@@ -17,10 +17,21 @@ export const authOptions: AuthOptions = {
   callbacks: {
     session: (async ({ session, user }: { session: Session; user: User }) => {
       if (session.user) {
+        const fetchSchool = async () => {
+          let userSchool = await prisma.school.findFirst({
+            where: {
+              id: user.schoolId!,
+            },
+          });
+          if (!userSchool) return undefined;
+          return userSchool;
+        };
         session.user.id = user.id;
         session.user.nickname = user.nickname ? user.nickname : undefined;
         session.user.age = user.age ? user.age : undefined;
-        session.user.school = user.schoolId ? user.schoolId : undefined;
+        session.user.isAdmin = !!user.isAdmin;
+        if (!user.schoolId) session.user.school = undefined;
+        else session.user.school = await fetchSchool();
         session.user.classNumber = user.classNumber
           ? user.classNumber
           : undefined;

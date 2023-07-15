@@ -85,7 +85,10 @@ export default function Page() {
           {data?.user.school && (
             <div className={styles.section}>
               <h2>User school</h2>
-              <div>{data.user.school}</div>
+              <h3>User school name</h3>
+              <div>{data.user.school.schoolName}</div>
+              <h3>User school id</h3>
+              <div>{data.user.school.id}</div>
             </div>
           )}
           {data?.user.classNumber && (

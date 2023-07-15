@@ -19,7 +19,6 @@ interface HeaderProps {
 export default function Header(props: HeaderProps) {
   let [enabled, setEnabled] = useState(false);
   let { status, data } = useSession();
-
   const toggle = () => setEnabled((j) => !j);
 
   return (
@@ -60,6 +59,7 @@ export default function Header(props: HeaderProps) {
           </div>
         </Garo>
       </header>
+
       <div
         className={styles.sideMenu}
         style={{
@@ -79,62 +79,101 @@ export default function Header(props: HeaderProps) {
           </div>
         </Garo>
         <Saero>
-          {status != "loading" && status == "authenticated" ? (
+          {/* ㅇㅇ님 안녕하세요! */}
+          <div className={styles.welcome}>
+            <Garo>
+              {data?.user.isAdmin === true ? (
+                <>
+                  <div
+                    style={{
+                      background: "var(--POI-UI-ERROR)",
+                      color: "white",
+                      padding: "6px 16px",
+                      borderRadius: "32px",
+                      fontSize: "1rem",
+                      marginRight: "4px",
+                    }}
+                  >
+                    Admin
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+              <strong>
+                {data?.user.nickname || data?.user.name || "사용자"}
+              </strong>
+              님 안녕하세요!
+            </Garo>
+          </div>
+          <div className={styles.spacer} />
+          {status == "authenticated" && (
+            <Link href="/auth/mypage" className={styles.menuLink}>
+              마이페이지
+            </Link>
+          )}
+          {status != "loading" && (
+            <Link
+              href={"/auth/sign" + (status == "authenticated" ? "out" : "in")}
+              className={styles.menuLink}
+            >
+              로그{status == "authenticated" ? "아웃" : "인"}
+            </Link>
+          )}
+          <div className={styles.spacer} />
+
+          {/* 게시판 기능 */}
+          <div className={classNames(styles.welcome, styles.void)}>
+            <strong>커뮤니티</strong>
+          </div>
+          <div className={styles.spacer}></div>
+          <Link href="/community" className={styles.menuLink}>
+            게시판
+          </Link>
+          {status == "authenticated" && (
+            <Link href="/community/new" className={styles.menuLink}>
+              글 쓰기
+            </Link>
+          )}
+          <div className={styles.spacer} />
+
+          {/* 부가 서비스 기능 */}
+          <div className={classNames(styles.welcome, styles.void)}>
+            <strong>부가서비스</strong>
+          </div>
+          <div className={styles.spacer}></div>
+          {status == "authenticated" ? (
             <>
-              <div className={styles.welcome}>
-                <strong>{data?.user.nickname || data?.user.name}</strong>님
-                안녕하세요!
-              </div>
-
-              <div className={styles.spacer} />
-
-              <Link href="/" className={styles.menuLink}>
-                마이페이지
-              </Link>
-              <Link href="/auth/signout" className={styles.menuLink}>
-                로그아웃
-              </Link>
-              <div className={styles.spacer} />
-              <div className={classNames(styles.welcome, styles.void)}>
-                <strong>커뮤니티</strong>
-              </div>
-              <div className={styles.spacer}></div>
-              <Link href="/" className={styles.menuLink}>
-                게시판
-              </Link>
-              <div className={styles.spacer}></div>
-              <Link href="/" className={styles.menuLink}>
-                글 쓰기
-              </Link>
-              <div className={styles.spacer} />
-              <div className={classNames(styles.welcome, styles.void)}>
-                <strong>부가서비스</strong>
-              </div>
-              <div className={styles.spacer}></div>
-              <Link href="/" className={styles.menuLink}>
-                우리 학교 학사일정
-              </Link>
-              <div className={styles.spacer}></div>
-              <Link href="/" className={styles.menuLink}>
+              <Link href="/Additional/food" className={styles.menuLink}>
                 우리 학교 급식표
               </Link>
               <div className={styles.spacer}></div>
-              <Link href="/" className={styles.menuLink}>
+              <Link href="/Additional/time" className={styles.menuLink}>
                 우리 학교 시간표
               </Link>
             </>
           ) : (
             <>
-              <Link href="/auth/signin" className={styles.menuLink}>
-                로그인
-              </Link>
-              <div className={styles.spacer} />
-              <div className={classNames(styles.welcome, styles.void)}>
-                <strong>부가서비스</strong>
-              </div>
-              <div className={styles.spacer}></div>
-              <div className={styles.spacer}>로그인 후 이용 가능합니다</div>
+              <a className={styles.menuLink}>로그인 후 이용가능합니다.</a>
             </>
+          )}
+          {data?.user.isAdmin === true ? (
+            <>
+              <div className={styles.spacer}></div>
+              <div className={classNames(styles.welcome, styles.void)}>
+                <strong>관리자</strong>
+              </div>
+              <div className={styles.spacer}></div>{" "}
+              <Link href="/admin/user/search" className={styles.menuLink}>
+                유저 관리
+              </Link>
+              <div className={styles.spacer}></div>
+              <Link href="/admin/community" className={styles.menuLink}>
+                커뮤니티 관리
+              </Link>
+            </>
+          ) : (
+            <></>
           )}
         </Saero>
       </div>
