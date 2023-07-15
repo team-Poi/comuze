@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Input, Button, optCSS } from "@team.poi/ui";
+import { Input, Button, optCSS, modalEmitter } from "@team.poi/ui";
 import axios from "axios";
 import styles from "@/styles/auth/optionalData.module.css";
 import { Saero } from "@/components/Saero";
@@ -13,6 +13,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { StepDescription, StepTitle, SchoolItem } from "./changeSchool";
+import useModal from "@/utils/useModal";
+import Privacy from "@/components/privacy";
+import { FullFlex } from "@/components/FullFlex";
 
 interface StepProps {
   next: () => void;
@@ -27,6 +30,7 @@ function Step1(
 ) {
   const [errored, setErrored] = useState(false);
   const [fetching, setFetching] = useState(false);
+
   const next_ = () => {
     if (fetching) return;
     if (!props.nickname) return toast.error("닉네임을 입력해주세요!");
@@ -426,6 +430,7 @@ export default function Page() {
   let [class_, setClass_] = useState<number | null>(null);
 
   let router = useRouter();
+  let modal = useModal();
 
   const nextStep = useCallback(() => {
     setStep((j) => {
@@ -508,25 +513,84 @@ export default function Page() {
         ? 7
         : 0;
     age += grade;
-    axios
-      .post("/api/auth/optionalSet", {
-        phoneNumber: phone,
-        schoolCode: school.학교코드,
-        nickname: nickname,
-        age: age,
-        classNum: class_,
-        schoolName: school.학교명,
-      })
-      .then(({ data }) => {
-        if (data.s === true) {
-          update().then(() => {
-            router.push("/");
-          });
-        } else {
-          toast.error(data.e);
-          setStep(-1);
-        }
-      });
+
+    modal.addModal.modal({
+      RenderChildren: (props) => {
+        return (
+          <div
+            style={{
+              padding: "1rem",
+              height: "min(600px, 85vh)",
+            }}
+          >
+            <Saero
+              gap={4}
+              style={{
+                height: "100%",
+              }}
+            >
+              <FullFlex>
+                <Privacy />
+              </FullFlex>
+              <div>해당 내용에 동의 하십니까?</div>
+              <Garo gap={4}>
+                <Flex>
+                  <Button
+                    style={{
+                      width: "100%",
+                    }}
+                    css={{
+                      width: "100%",
+                    }}
+                    color="ERROR"
+                    onClick={() => {
+                      props.close();
+                    }}
+                  >
+                    아니요
+                  </Button>
+                </Flex>
+                <Flex>
+                  <Button
+                    style={{
+                      width: "100%",
+                    }}
+                    css={{
+                      width: "100%",
+                    }}
+                    onClick={() => {
+                      axios
+                        .post("/api/auth/optionalSet", {
+                          phoneNumber: phone,
+                          schoolCode: school?.학교코드,
+                          nickname: nickname,
+                          age: age,
+                          classNum: class_,
+                          schoolName: school?.학교명,
+                        })
+                        .then(({ data }) => {
+                          if (data.s === true) {
+                            update().then(() => {
+                              router.push("/");
+                              props.close();
+                            });
+                          } else {
+                            toast.error(data.e);
+                            setStep(-1);
+                            props.close();
+                          }
+                        });
+                    }}
+                  >
+                    네
+                  </Button>
+                </Flex>
+              </Garo>
+            </Saero>
+          </div>
+        );
+      },
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);

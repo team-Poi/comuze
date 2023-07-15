@@ -214,6 +214,7 @@ export default function Search(props: { maxPage: number }) {
                                                 if (!e.data.s) return;
                                                 await refrash();
                                                 await props.close();
+                                                props.close();
                                               });
                                           }}
                                         >
