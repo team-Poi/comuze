@@ -34,12 +34,10 @@ export default async function handler(
         s: false,
         e: -2,
       });
-    /*
     if ((await kensorship(title)).startsWith("Y"))
       return res.send({ s: false, e: -3 });
     if ((await kensorship(htmlToText(content))).startsWith("Y"))
       return res.send({ s: false, e: -4 });
-    */
     let x = await prisma.post.create({
       data: {
         title: title,

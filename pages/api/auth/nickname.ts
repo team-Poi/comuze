@@ -18,7 +18,9 @@ export default async function handler(
     },
   });
   if (x > 0) return res.send({ s: false, e: 1 });
-  // let dt = await kensorship(nickname);
-  //if (dt.startsWith("Y")) return res.send({ s: false, e: 2 });
+
+  let dt = await kensorship(nickname);
+  if (dt.startsWith("Y")) return res.send({ s: false, e: 2 });
+
   return res.send({ s: true });
 }
