@@ -165,6 +165,13 @@ export default function New() {
                   gpt: useChatgpt,
                 })
                 .then((e) => {
+                  if (e.status != 200)
+                    return toast.update(toastId, {
+                      render: "알수없는 오류가 발생하였어요.",
+                      type: "error",
+                      isLoading: false,
+                      autoClose: 3000,
+                    });
                   if (!e.data.s) {
                     if (e.data.e == -1)
                       return toast.update(toastId, {
@@ -187,6 +194,13 @@ export default function New() {
                     else if (e.data.e == -4)
                       return toast.update(toastId, {
                         render: "글에서 욕설을 발견했어요. 글을 수정해주세요.",
+                        type: "error",
+                        isLoading: false,
+                        autoClose: 3000,
+                      });
+                    else
+                      return toast.update(toastId, {
+                        render: "알수없는 오류가 발생하였어요.",
                         type: "error",
                         isLoading: false,
                         autoClose: 3000,
