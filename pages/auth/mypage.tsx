@@ -111,7 +111,7 @@ export default function Page() {
                 </span>
               </strong>
               <div className={styles.nick}>
-                <strong>{data?.user.nickname}</strong>님 환영합니다!
+                <strong>{data?.user.nickname}</strong>님 환영해요!
               </div>
             </h1>
           </Conatiner>
@@ -193,7 +193,7 @@ export default function Page() {
                         />
                       );
                     },
-                    minDataCount: 2000, // 하 ㅆ발 page 구현해주실 착한 DEV분 구합니다
+                    minDataCount: 2000,
                   })()}
                 </Saero>
               </Flex>

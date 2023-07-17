@@ -154,7 +154,7 @@ export default function Header(props: HeaderProps) {
             </>
           ) : (
             <>
-              <a className={styles.menuLink}>로그인 후 이용가능합니다.</a>
+              <a className={styles.menuLink}>로그인 후 이용가능해요.</a>
             </>
           )}
           {data?.user.isAdmin === true ? (
