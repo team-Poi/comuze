@@ -190,8 +190,16 @@ export default function Search(props: { maxPage: number }) {
                                     const [nickname, setNickname] = useState(
                                       r.data.data.nickname
                                     );
-                                    const [grade, setGrade] = useState(
-                                      r.data.data.grade
+                                    const [age, setAge] = useState(
+                                      r.data.data.age
+                                    );
+                                    const [classNumber, setClassNumber] =
+                                      useState(r.data.data.classNumber);
+                                    const [schoolId, setSchoolId] = useState(
+                                      r.data.data.schoolId
+                                    );
+                                    const [isAdmin, setIsAdmin] = useState(
+                                      r.data.data.isAdmin
                                     );
                                     return (
                                       <div
@@ -215,15 +223,41 @@ export default function Search(props: { maxPage: number }) {
                                           <Input
                                             placeholder="닉네임"
                                             value={nickname}
+                                            onChange={(e) =>
+                                              setNickname(e.currentTarget.value)
+                                            }
                                           />
                                           <Input
-                                            placeholder="학년"
-                                            value={grade}
+                                            placeholder="나이"
+                                            value={age}
+                                            onChange={(e) =>
+                                              setAge(e.currentTarget.value)
+                                            }
                                           />
-                                          <Input placeholder="반" />
-                                          <Input placeholder="학교id" />
+                                          <Input
+                                            placeholder="반"
+                                            value={classNumber}
+                                            onChange={(e) =>
+                                              setClassNumber(
+                                                e.currentTarget.value
+                                              )
+                                            }
+                                          />
+                                          <Input
+                                            placeholder="학교id"
+                                            value={schoolId}
+                                            onChange={(e) =>
+                                              setSchoolId(e.currentTarget.value)
+                                            }
+                                          />
                                         </Saero>
-                                        <Switch />
+                                        <Garo gap={6}>
+                                          <span>Admin</span>
+                                          <Switch
+                                            value={isAdmin}
+                                            onChange={(e) => setIsAdmin(e)}
+                                          />
+                                        </Garo>
                                         <div
                                           style={{
                                             paddingTop: "1rem",
@@ -242,16 +276,18 @@ export default function Search(props: { maxPage: number }) {
                                               onClick={() => {
                                                 axios
                                                   .post(
-                                                    `/api/admin/community/category/remove`,
+                                                    `/api/admin/user/remove`,
                                                     {
                                                       id: e.id.toString(),
                                                     }
                                                   )
                                                   .then(async (e) => {
-                                                    if (e.status != 200) return;
-                                                    if (!e.data.s) return;
-                                                    await refrash();
                                                     await props.close();
+                                                    if (e.status != 200)
+                                                      return alert(e.data);
+                                                    if (!e.data.s)
+                                                      return alert(e.data);
+                                                    await refrash();
                                                   });
                                               }}
                                             >
@@ -269,9 +305,14 @@ export default function Search(props: { maxPage: number }) {
                                               onClick={() => {
                                                 axios
                                                   .post(
-                                                    `/api/admin/community/category/set`,
+                                                    `/api/admin/user/edit`,
                                                     {
                                                       id: e.id.toString(),
+                                                      nickname: nickname,
+                                                      age: parseInt(age),
+                                                      class:
+                                                        parseInt(classNumber),
+                                                      school: schoolId,
                                                     }
                                                   )
                                                   .then(async (e) => {
