@@ -1,12 +1,11 @@
 import { Conatiner } from "@/components/Container";
 import Header from "@/components/Header";
 import CONSTANTS from "@/constants";
-import styles from "@/styles/Home.module.css";
-import { GetServerSidePropsContext } from "next";
+import styles from "./Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import prismadb from "@/utils/prisma";
 
-let messageLists = ["편리하게", "즐겁게", "행복하게", "신나게"];
+let messageLists = ["편리하게", "즐겁게", "행복하게", "신나게", "안전하게"];
 let messageAnimations: string[] = [messageLists[0]];
 
 function removeMesssages() {
@@ -108,30 +107,33 @@ export default function Home(props: { userCount: number; postCount: number }) {
               <span className={styles.serviceName}>
                 <span className={styles.smaller}>
                   <span className={styles.borderBottomServiceName}>
-                    시작해봐요!
+                    저희는요!
                   </span>
                 </span>
               </span>
             </strong>
           </h1>
-          <h1 className={styles.headTitle}>
-            <span className={styles.smaller}>
-              다른 친구들이 선택한 이유가 있지 않을까요?
-            </span>
-          </h1>
+          <section className={styles.descs}>
+            <h3>
+              <strong>첫째</strong>, 같은 또래의 학생끼리 소통할 수 있는
+              커뮤니티를 만들기 위해 노력하고 있어요.
+            </h3>
+            <h3>
+              <strong>둘째</strong>, 학생들이 편하게 학교생활을 할 수 있도록
+              노력하고 있어요.
+            </h3>
+          </section>
         </Conatiner>
       </div>
     </>
   );
 }
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  let userCount = await prismadb.user.count();
-  let postCount = await prismadb.post.count();
-
+export const getServerSideProps = async () => {
   return {
-    props: { userCount: userCount, postCount: postCount },
+    props: {
+      userCount: await prismadb.user.count(),
+      postCount: await prismadb.post.count(),
+    },
   };
 };
