@@ -260,7 +260,7 @@ export const getServerSideProps = async (
   // context.query
   const search = context.query.search as string;
   const category = context.query.category as string;
-  const sameAge = context.query.sameAge === "true";
+  const sameAge = true;
   let appender = {};
 
   if (category && category.toString() != "0") {
@@ -281,16 +281,18 @@ export const getServerSideProps = async (
         },
         props: {},
       };
-    appender = {
-      ...appender,
-      ...{
-        author: {
-          age: {
-            equals: session.user.age,
+    if (session.user.age)
+      appender = {
+        ...appender,
+        ...{
+          author: {
+            age: {
+              lte: session.user.age + 1,
+              gte: session.user.age - 1,
+            },
           },
         },
-      },
-    };
+      };
   }
 
   let dataCount = await prismadb.post.count({

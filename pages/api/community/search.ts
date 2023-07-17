@@ -13,12 +13,12 @@ export default async function handler(
   const searchCategory = req.query.category as string | null;
   const session = await getServerSession(req, res, authOptions);
   const showDifferentAge__ = req.query.showDifferentAge as string | null;
-  const showDifferentAge =
-    showDifferentAge__ == null
-      ? true
-      : showDifferentAge__ === "1"
-      ? true
-      : false;
+  const showDifferentAge = false;
+  // showDifferentAge__ == null
+  //   ? true
+  //   : showDifferentAge__ === "1"
+  //   ? true
+  //   : false;
 
   if (!page || parseInt(page) < 1 || !searchCategory)
     return res.send({
@@ -42,7 +42,14 @@ export default async function handler(
           }
         : {}),
       author: {
-        ...(showDifferentAge ? {} : { age: session.user.age }),
+        ...(showDifferentAge && session.user.age
+          ? {}
+          : {
+              age: {
+                lte: session.user.age! + 1,
+                gte: session.user.age! - 1,
+              },
+            }),
       },
       category: {
         show: {
