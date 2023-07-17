@@ -5,14 +5,7 @@ import { Button } from "@/components/Button";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import styles from "@/styles/community/new.module.css";
-import common from "@/styles/common.module.css";
-import classNames from "@/utils/classNames";
-import optCSS from "@/utils/optCSS";
-import { Loading } from "@/components/Loading";
-import { Saero } from "@/components/Saero";
 import { toast } from "react-toastify";
-import { Garo } from "@/components/Garo";
 
 interface Category {
   id: number;

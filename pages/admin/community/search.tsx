@@ -5,7 +5,6 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/postlist.module.css";
-import Link from "next/link";
 import Header from "@/components/Header";
 import { GetServerSidePropsContext } from "next";
 import { Pagination } from "@/components/Pagination";

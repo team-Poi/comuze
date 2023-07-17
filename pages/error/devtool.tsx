@@ -8,8 +8,6 @@ import { Saero } from "@/components/Saero";
 import { FullFlex } from "@/components/FullFlex";
 import { useRouter } from "next/router";
 
-/* 빌드시 사용(Dev에서 쓸거 아님) */
-
 const words = [`˙◠˙`, `ᴖ̈`, `(っ◞‸◟ c)`, `(ㅠ﹏ㅠ)`, `ꃋᴖꃋ`];
 
 export default function Devtool() {
