@@ -119,8 +119,6 @@ function Step2(
   const [schoolList, setSchoolList] = useState<SearchApiResult[]>([]);
   const [loading, setLoading] = useState(false);
 
-  console.log(schoolList);
-
   const doRequest = (
     query: string,
     callback: (res: SearchApiResult[]) => void
@@ -146,8 +144,6 @@ function Step2(
   useEffect(() => {
     doRequest("", setSchoolList);
   }, []);
-
-  console.log(schoolList);
 
   return (
     <div>

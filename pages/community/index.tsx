@@ -78,13 +78,6 @@ export default function Search(props: { maxPage: number }) {
       props.maxPage
     )
   );
-  console.log(
-    "M",
-    Math.min(
-      Math.max(parseInt((router.query.page as string) || "1"), 1),
-      props.maxPage
-    )
-  );
   const [loading, setLoading] = useState(true);
   const divRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
@@ -98,7 +91,6 @@ export default function Search(props: { maxPage: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
   useEffect(() => {
-    console.log(page);
     if (!page) {
       router.push(
         `/community/?page=1${

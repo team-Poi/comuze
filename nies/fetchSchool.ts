@@ -80,7 +80,6 @@ export default async function fetchSchool(
       };
     });
   } catch (err) {
-    console.log(err);
     return null;
   }
 }

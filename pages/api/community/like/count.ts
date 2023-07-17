@@ -47,7 +47,6 @@ export default async function handler(
       });
     }
   } catch (e) {
-    console.log(e);
     return res.send({
       s: false,
       e: -1,

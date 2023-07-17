@@ -67,7 +67,6 @@ export default function Page() {
       router.push("/auth/signin");
       return;
     }
-    // console.log(data?.user);
     setNickname(data?.user.nickname || data?.user.name || "");
     setClass(data?.user.classNumber || 0);
     setGrade(age2grade(data?.user.age || 0));

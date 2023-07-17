@@ -11,7 +11,6 @@ export default function UserDL() {
     axios.get("/api/export/user").then((e) => {
       if (!e.data.s) return;
       var data = new Blob([JSON.stringify(e.data.data)], { type: "text" });
-      console.log(e.data);
       var URL = window.URL.createObjectURL(data);
       var tempLink = document.createElement("a");
       tempLink.href = URL;

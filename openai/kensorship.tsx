@@ -7,7 +7,6 @@ const SYSTEM_PROMPT = `You are an tool that censorships. You must support korean
 const openai = new OpenAIApi(configuration);
 export async function kensorship(msg: string) {
   try {
-    console.log("Kensorship!");
     let data = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       temperature: 0,
@@ -23,8 +22,6 @@ export async function kensorship(msg: string) {
         },
       ],
     });
-
-    console.log(data.data.choices[0].message!.content!);
 
     return data.data.choices[0].message!.content!;
   } catch (e: any) {

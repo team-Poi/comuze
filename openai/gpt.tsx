@@ -18,8 +18,6 @@ export async function chatgpt(msg: string) {
       ],
     });
 
-    console.log(data.data.choices[0].message!.content!);
-
     return data.data.choices[0].message!.content!;
   } catch (e: any) {
     console.error(e.response.data);

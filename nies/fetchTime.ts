@@ -83,7 +83,6 @@ export default async function fetchTime(
     });
     return res;
   } catch (err) {
-    console.log(err);
     return null;
   }
 }

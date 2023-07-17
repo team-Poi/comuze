@@ -44,7 +44,6 @@ export default async function handler(
       s: true,
     });
   } catch (e) {
-    console.log(e);
     return res.send({
       s: false,
       e: -4,

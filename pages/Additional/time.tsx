@@ -21,8 +21,6 @@ export default function Time() {
 
   let texts: React.ReactNode[] = [];
 
-  console.log(maxLen);
-
   for (let i = 0; i < maxLen; i++) {
     texts.push(
       <div
