@@ -516,7 +516,8 @@ export default function Page() {
           <div
             style={{
               padding: "1rem",
-              height: "min(600px, 85vh)",
+              height: "min(600px, 80vh)",
+              boxSizing: "border-box",
             }}
           >
             <Saero
