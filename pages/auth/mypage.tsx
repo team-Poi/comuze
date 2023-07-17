@@ -2,7 +2,7 @@ import { Garo } from "@/components/Garo";
 import Header from "@/components/Header";
 import { Saero } from "@/components/Saero";
 import styles from "@/styles/auth/mypage.module.css";
-import main_styles from "@/styles/Home.module.css";
+import main_styles from "../Home.module.css";
 import common from "@/styles/common.module.css";
 import classNames from "@/utils/classNames";
 
