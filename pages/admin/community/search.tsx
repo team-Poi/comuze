@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/postlist.module.css";
+import Link from "next/link";
 import Header from "@/components/Header";
 import { GetServerSidePropsContext } from "next";
 import { Pagination } from "@/components/Pagination";
@@ -16,7 +17,9 @@ import { Garo } from "@/components/Garo";
 import common from "@/styles/common.module.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
+import mypageStyle from "@/styles/auth/mypage.module.css";
 
 function SkeletonP(props: { width: string }) {
   return (
@@ -47,6 +50,14 @@ interface Post {
 interface Category {
   id: number;
   name: string;
+}
+
+function LinkedTD(props: React.PropsWithChildren<{ href?: string }>) {
+  return (
+    <td>
+      <Link href={props.href || "/"}>{props.children}</Link>
+    </td>
+  );
 }
 
 let defaultPosts: Post[] = [];
@@ -81,7 +92,11 @@ export default function Search(props: { maxPage: number }) {
   }, [status]);
   useEffect(() => {
     if (!page) {
-      router.push("/community/?page=1");
+      router.push(
+        `/community/?page=1${
+          router.query.category ? `&category=${router.query.category}` : ""
+        }`
+      );
     }
     setLoading(true);
     setPosts(defaultPosts);
@@ -89,7 +104,11 @@ export default function Search(props: { maxPage: number }) {
       behavior: "smooth",
     });
     axios
-      .get(`/api/community/search?page=${page}&title=${searchTitle}`)
+      .get(
+        `/api/community/search?page=${page}&title=${searchTitle}&category=${
+          router.query.category || "0"
+        }`
+      )
       .then((response) => {
         setPosts(response.data.data as Post[]);
       })
@@ -97,7 +116,7 @@ export default function Search(props: { maxPage: number }) {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, router.query.category]);
 
   useEffect(() => {
     (async () => {
@@ -131,12 +150,25 @@ export default function Search(props: { maxPage: number }) {
                 borderBottom: "1px solid black",
                 fontSize: "0.85em",
               }}
+              value={router.query.category || "0"}
+              onChange={(e) => {
+                let val = parseInt(e.currentTarget.value);
+                let routerQ = parseInt(
+                  (router.query.category as string) || "0"
+                );
+                if (val == routerQ) return;
+                router.push(
+                  `/community?category=${val}${
+                    router.query.search ? `&search=${router.query.search}` : ""
+                  }`
+                );
+              }}
             >
               <option value={0}>모두 보기</option>
               {categories.map((e, i) => {
                 return (
                   <>
-                    <option value={e.id} onSelect={() => {}}>
+                    <option key={i} value={e.id} onSelect={() => {}}>
                       {e.name}
                     </option>
                   </>
@@ -167,7 +199,6 @@ export default function Search(props: { maxPage: number }) {
               <tr>
                 <td className={styles.td}>번호</td>
                 <td className={styles.td}>제목</td>
-                <td className={styles.td}>관리</td>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -186,7 +217,6 @@ export default function Search(props: { maxPage: number }) {
                       >
                         <RandomSkeleton key={`td${i}a`} />
                         <RandomSkeleton key={`td${i}b`} />
-                        <RandomSkeleton key={`td${i}c`} />
                       </tr>
                     );
                   return (
@@ -196,11 +226,12 @@ export default function Search(props: { maxPage: number }) {
                         router.push(href);
                       }}
                     >
-                      <td key={`td${i}a`}>{e.id}</td>
-                      <td key={`td${i}b`}>{e.title}</td>
-                      <td key={`td${i}c`}>
-                        <Button>관리</Button>
-                      </td>
+                      <LinkedTD href={href} key={`td${i}a`}>
+                        {e.id}
+                      </LinkedTD>
+                      <LinkedTD href={href} key={`td${i}b`}>
+                        {e.title}
+                      </LinkedTD>
                     </tr>
                   );
                 })}
@@ -217,6 +248,7 @@ export default function Search(props: { maxPage: number }) {
           />
         </Garo>
       </Conatiner>
+      <Btn />
     </>
   );
 }
@@ -228,7 +260,7 @@ export const getServerSideProps = async (
   // context.query
   const search = context.query.search as string;
   const category = context.query.category as string;
-  const sameAge = context.query.sameAge === "true";
+  const sameAge = true;
   let appender = {};
 
   if (category && category.toString() != "0") {
@@ -249,16 +281,18 @@ export const getServerSideProps = async (
         },
         props: {},
       };
-    appender = {
-      ...appender,
-      ...{
-        author: {
-          age: {
-            equals: session.user.age,
+    if (session.user.age)
+      appender = {
+        ...appender,
+        ...{
+          author: {
+            age: {
+              lte: session.user.age + 1,
+              gte: session.user.age - 1,
+            },
           },
         },
-      },
-    };
+      };
   }
 
   let dataCount = await prismadb.post.count({
@@ -271,3 +305,23 @@ export const getServerSideProps = async (
     props: { maxPage: Math.ceil(dataCount / 30) },
   };
 };
+function Btn() {
+  return (
+    <>
+      <Button className={mypageStyle.EditInfo} onClick={() => {}}>
+        <Link
+          href="/community/new"
+          style={{
+            color: "white",
+            textDecoration: "none",
+          }}
+        >
+          <Garo className={common.center} gap={7}>
+            <Icon icon={"edit"} size={24} />
+            <span>글쓰기</span>
+          </Garo>
+        </Link>
+      </Button>
+    </>
+  );
+}
