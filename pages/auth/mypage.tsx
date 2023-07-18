@@ -209,7 +209,7 @@ function Article(props: { title: string; date: any; link: string }) {
   return (
     <>
       <Link
-        href={`https://ilydev.com:3000/community/n/` + props.link}
+        href={`https://kcf.ert.im/community/n/` + props.link}
         style={{
           textDecoration: "none",
         }}
