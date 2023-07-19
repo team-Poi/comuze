@@ -157,6 +157,7 @@ export default function Header(props: HeaderProps) {
               <a className={styles.menuLink}>로그인 후 이용가능해요.</a>
             </>
           )}
+          {/* 관리자 */}
           {data?.user.isAdmin === true ? (
             <>
               <div className={styles.spacer}></div>
@@ -168,7 +169,7 @@ export default function Header(props: HeaderProps) {
                 유저 관리
               </Link>
               <div className={styles.spacer}></div>
-              <Link href="/admin/community" className={styles.menuLink}>
+              <Link href="/admin/community/search" className={styles.menuLink}>
                 커뮤니티 관리
               </Link>
             </>

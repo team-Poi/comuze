@@ -45,6 +45,13 @@ function RandomSkeleton() {
 interface Post {
   id: string;
   title: string;
+  authorId: string;
+  author: Author;
+}
+
+interface Author {
+  nickname: string;
+  age: number;
 }
 
 interface Category {
@@ -52,31 +59,25 @@ interface Category {
   name: string;
 }
 
-function LinkedTD(props: React.PropsWithChildren<{ href?: string }>) {
-  return (
-    <td>
-      <Link href={props.href || "/"}>{props.children}</Link>
-    </td>
-  );
-}
-
 let defaultPosts: Post[] = [];
 for (let i = 0; i < 30; i++)
-  defaultPosts.push({ id: "로딩중", title: "로딩중" });
+  defaultPosts.push({
+    id: "로딩중",
+    title: "로딩중",
+    authorId: "로딩중",
+    author: {
+      nickname: "로딩중",
+      age: 0,
+    },
+  });
 
-export default function Search(props: { maxPage: number }) {
+export default function Search() {
   const router = useRouter();
   const { status } = useSession();
   const [posts, setPosts] = useState<Post[]>(defaultPosts);
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchTitle, setSearchTitle] = useState(
     (router.query.search as string) || ""
-  );
-  const [page, setPage] = useState(
-    Math.min(
-      Math.max(parseInt((router.query.page as string) || "1"), 1),
-      props.maxPage
-    )
   );
   const [loading, setLoading] = useState(true);
   const divRef = React.createRef<HTMLDivElement>();
@@ -91,13 +92,6 @@ export default function Search(props: { maxPage: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
   useEffect(() => {
-    if (!page) {
-      router.push(
-        `/community/?page=1${
-          router.query.category ? `&category=${router.query.category}` : ""
-        }`
-      );
-    }
     setLoading(true);
     setPosts(defaultPosts);
     divRef.current?.scrollIntoView({
@@ -105,7 +99,7 @@ export default function Search(props: { maxPage: number }) {
     });
     axios
       .get(
-        `/api/community/search?page=${page}&title=${searchTitle}&category=${
+        `/api/admin/community/search?title=${searchTitle}&category=${
           router.query.category || "0"
         }`
       )
@@ -116,7 +110,7 @@ export default function Search(props: { maxPage: number }) {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, router.query.category]);
+  }, [router.query.category]);
 
   useEffect(() => {
     (async () => {
@@ -158,7 +152,7 @@ export default function Search(props: { maxPage: number }) {
                 );
                 if (val == routerQ) return;
                 router.push(
-                  `/community?category=${val}${
+                  `/admin/community/search?category=${val}${
                     router.query.search ? `&search=${router.query.search}` : ""
                   }`
                 );
@@ -184,14 +178,6 @@ export default function Search(props: { maxPage: number }) {
         />
         <div className={styles.spacer} />
         <div ref={divRef}></div>
-        <Garo className={common.center}>
-          <Pagination
-            value={page}
-            setValue={setPage}
-            maxCount={props.maxPage}
-            count={5}
-          />
-        </Garo>
         <div className={styles.spacer} />
         <NoSSR>
           <table className={styles.table}>
@@ -199,6 +185,8 @@ export default function Search(props: { maxPage: number }) {
               <tr>
                 <td className={styles.td}>번호</td>
                 <td className={styles.td}>제목</td>
+                <td className={styles.td}>유저id</td>
+                <td className={styles.td}>닉네임</td>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -217,6 +205,7 @@ export default function Search(props: { maxPage: number }) {
                       >
                         <RandomSkeleton key={`td${i}a`} />
                         <RandomSkeleton key={`td${i}b`} />
+                        <RandomSkeleton key={`td${i}c`} />
                       </tr>
                     );
                   return (
@@ -226,12 +215,10 @@ export default function Search(props: { maxPage: number }) {
                         router.push(href);
                       }}
                     >
-                      <LinkedTD href={href} key={`td${i}a`}>
-                        {e.id}
-                      </LinkedTD>
-                      <LinkedTD href={href} key={`td${i}b`}>
-                        {e.title}
-                      </LinkedTD>
+                      <td key={`td${i}a`}>{e.id}</td>
+                      <td key={`td${i}b`}>{e.title}</td>
+                      <td key={`td${i}c`}>{e.authorId}</td>
+                      <td key={`td${i}d`}>{e.author.nickname}</td>
                     </tr>
                   );
                 })}
@@ -239,72 +226,12 @@ export default function Search(props: { maxPage: number }) {
           </table>
         </NoSSR>
         <div className={styles.spacer} />
-        <Garo className={common.center}>
-          <Pagination
-            value={page}
-            setValue={setPage}
-            maxCount={props.maxPage}
-            count={5}
-          />
-        </Garo>
       </Conatiner>
       <Btn />
     </>
   );
 }
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  // ?search=asdasd&sameAge=true&category=1
-  // context.query
-  const search = context.query.search as string;
-  const category = context.query.category as string;
-  const sameAge = true;
-  let appender = {};
-
-  if (category && category.toString() != "0") {
-    appender = {
-      ...appender,
-      ...{
-        categoryID: parseInt(category),
-      },
-    };
-  }
-  if (sameAge == true) {
-    let session = await getServerSession(context.req, context.res, authOptions);
-    if (!session)
-      return {
-        redirect: {
-          permanent: false,
-          destination: "/auth/signin",
-        },
-        props: {},
-      };
-    if (session.user.age)
-      appender = {
-        ...appender,
-        ...{
-          author: {
-            age: {
-              lte: session.user.age + 1,
-              gte: session.user.age - 1,
-            },
-          },
-        },
-      };
-  }
-
-  let dataCount = await prismadb.post.count({
-    where: {
-      ...(search ? { title: { contains: search } } : {}),
-      ...appender,
-    },
-  });
-  return {
-    props: { maxPage: Math.ceil(dataCount / 30) },
-  };
-};
 function Btn() {
   return (
     <>
