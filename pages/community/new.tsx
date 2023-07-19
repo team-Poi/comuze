@@ -155,7 +155,9 @@ export default function New() {
           </Garo>
           <Button
             onClick={() => {
-              let toastId = toast.loading("전체 내용을 검사중이에요");
+              let toastId = toast.loading("전체 내용을 검사중이에요", {
+                autoClose: 10000,
+              });
               axios
                 .post("/api/community/set", {
                   title: title,
