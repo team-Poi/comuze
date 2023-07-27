@@ -1,15 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import style from "@/styles/chat.module.css";
 import { Icon } from "./Icon";
-import { Conatiner } from "./Container";
 import NoSSR from "react-no-ssr";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Button } from "./Button";
 import useModal from "@/utils/useModal";
-import { Saero } from "./Saero";
-import common from "@/styles/common.module.css";
 import { Garo } from "./Garo";
 
 interface Message {
@@ -17,6 +13,7 @@ interface Message {
   isMine: boolean;
   content: string;
   authorName: string;
+  isGptRecall: boolean;
 }
 
 export default function Chat(props: {
@@ -47,6 +44,9 @@ export default function Chat(props: {
 
   const send = async () => {
     if (!input) return;
+
+    let t = toast.loading("글을 입력하는 중이에요.");
+
     await axios
       .post("/api/chat/set", {
         content: input,
@@ -55,13 +55,32 @@ export default function Chat(props: {
       .then((e) => {
         if (e.data.s == false) {
           if (e.data.e == -1) toast.error("알수없는 오류가 발생했습니다.");
-          // -2는 로그인 안된상태 -2일떄는 커뮤 페이지에셔 먼저 핸들
-          if (e.data.e == -3)
-            toast.error("댓글에 욕설을 감지했어요. 글을 수정해주세요!");
+          else if (e.data.e == -4)
+            return toast.update(t, {
+              render: "댓글에 욕설을 감지했어요. 글을 수정해주세요!",
+              autoClose: 3000,
+              type: "error",
+              isLoading: false,
+            });
+          else if (e.data.e == -2)
+            return; // -2는 로그인 안된상태 (커뮤 페이지에셔 먼저 핸들)
+          else if (e.data.e == -3) return; // 글쓴이와 나이가 조건이 안맞을때 (커뮤 페이지에셔 먼저 핸들)
         } else {
           setInput("");
+          return toast.update(t, {
+            render: "알수없는 오류가 발생했습니다.",
+            autoClose: 3000,
+            type: "error",
+            isLoading: false,
+          });
         }
       });
+    toast.update(t, {
+      render: "댓글 작성에 성공하였습니다.",
+      autoClose: 3000,
+      type: "success",
+      isLoading: false,
+    });
     await refrash();
   };
 
@@ -145,7 +164,7 @@ export default function Chat(props: {
                           >
                             Bot
                           </span>
-                          {props.isMine ? (
+                          {props.isMine && e.isGptRecall ? (
                             <button
                               className="gen-button"
                               style={{
