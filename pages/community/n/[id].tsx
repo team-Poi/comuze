@@ -10,6 +10,10 @@ import classNames from "@/utils/classNames";
 import Link from "next/link";
 import { Garo } from "@/components/Garo";
 import Chat from "@/components/Chat";
+import useModal from "@/utils/useModal";
+import { Flex } from "@/components/Flex";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
 
 function SkeletonP(props: { width: string }) {
   return (
@@ -23,6 +27,7 @@ function SkeletonP(props: { width: string }) {
 }
 
 export default function View() {
+  const modal = useModal();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [title, settitle] = useState("로딩중");
@@ -71,6 +76,23 @@ export default function View() {
       <path
         d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
         fill="var(--POI-UI-ERROR)"
+      />
+    </svg>
+  );
+
+  const emergency = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24"
+      viewBox="0 -960 960 960"
+      width="24"
+      style={{
+        color: "var(--POI-UI-ERROR)",
+      }}
+    >
+      <path
+        fill="red"
+        d="M210-160v-60h61l84-277q6-19 21.5-31t35.5-12h136q20 0 35.5 12t21.5 31l84 277h61v60H210Zm125-60h290l-78-260H413l-78 260Zm115-440v-180h60v180h-60Zm235 98-43-43 128-127 42 42-127 128Zm55 192v-60h180v60H740ZM275-562 148-690l42-42 128 127-43 43ZM40-370v-60h180v60H40Zm440 150Z"
       />
     </svg>
   );
@@ -209,21 +231,115 @@ export default function View() {
             {disabled ? null : (
               <>
                 <Garo
-                  gap={4}
                   style={{
-                    marginBottom: "1rem",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 4,
                   }}
                 >
-                  <div
-                    className={[styles.span, fetching ? styles.load : ""].join(
-                      " "
-                    )}
-                    onClick={likePost}
+                  <Garo
+                    gap={4}
+                    style={{
+                      marginBottom: "0",
+                    }}
                   >
-                    {heartEmpty}
-                    {hearyFill}
+                    <div
+                      className={[
+                        styles.span,
+                        fetching ? styles.load : "",
+                      ].join(" ")}
+                      onClick={likePost}
+                    >
+                      {heartEmpty}
+                      {hearyFill}
+                    </div>
+                    <span>{count}</span>
+                  </Garo>
+                  <div
+                    className={styles.span}
+                    onClick={() => {
+                      modal.addModal.modal({
+                        RenderChildren: (props) => {
+                          const [content, setContent] = useState("");
+                          return (
+                            <>
+                              <div
+                                style={{
+                                  padding: "1rem",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: "1.25rem",
+                                  }}
+                                >
+                                  게시물 신고
+                                </div>
+                                <select
+                                  style={{
+                                    outline: "none",
+                                    border: "0.5px solid grey",
+                                    borderRadius: "5px",
+                                    padding: "4px 8px",
+                                  }}
+                                >
+                                  <option value="harmful">유해한 게시물</option>
+                                  <option value="itself">
+                                    자살/자해 의심 게시물
+                                  </option>
+                                  <option value="tos">
+                                    커뮤니티 이용수칙 위반 게시물
+                                  </option>
+                                  <option value="out">기타</option>
+                                </select>
+                                <div
+                                  style={{
+                                    padding: "5px",
+                                  }}
+                                ></div>
+                                <Input
+                                  placeholder="자세한 설명 부탁드립니다"
+                                  onChange={(e) => {
+                                    setContent(e.currentTarget.value);
+                                  }}
+                                />
+
+                                <div
+                                  style={{
+                                    paddingTop: "0.75rem",
+                                  }}
+                                />
+                                <Garo gap={4}>
+                                  <Flex>
+                                    <Button
+                                      color="ERROR"
+                                      style={{
+                                        width: "100%",
+                                      }}
+                                      css={{
+                                        width: "100%",
+                                      }}
+                                      onClick={() => {
+                                        axios.post("/api/community/report", {
+                                          postID: id,
+                                          content: content,
+                                        });
+                                        props.close();
+                                      }}
+                                    >
+                                      신고하기
+                                    </Button>
+                                  </Flex>
+                                </Garo>
+                              </div>
+                            </>
+                          );
+                        },
+                      });
+                    }}
+                  >
+                    {emergency}
                   </div>
-                  <span>{count}</span>
                 </Garo>
               </>
             )}
