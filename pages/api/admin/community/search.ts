@@ -60,6 +60,14 @@ export default async function handler(
       id: true,
       authorId: true,
       content: true,
+      reports: {
+        select: {
+          id: true,
+          postID: false,
+          reporterId: true,
+          reportedAt: true,
+        },
+      },
     },
   });
 
