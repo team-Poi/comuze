@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Editor } from "@tinymce/tinymce-react";
 import Header from "@/components/Header";
 import { Conatiner } from "@/components/Container";
@@ -29,7 +30,8 @@ export default function New() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [category, setCategory] = useState(1);
   const [onlyAuthorView, SetOnlyAuthorView] = useState(false);
-  const [useChatgpt, SetUseChatgpt] = useState(true);
+  const [useChatgpt, setUseChatgpt] = useState(true);
+  const [gptOnlyMode, setGptOnlyMode] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -39,13 +41,53 @@ export default function New() {
     })();
   }, []);
 
-  useEffect(() => {
-    /* Only For Development */
-    if (!window) return;
-    (window as any).setCategory = setCategory;
-    (window as any).setTitle = setTitle;
-    (window as any).setLoaded = setLoaded;
-  }, []);
+  const onSubmit = () => {
+    let toastId = toast.loading("전체 내용을 검사중이에요", {
+      autoClose: 10000,
+    });
+    axios
+      .post("/api/community/set", {
+        title: title,
+        content: (editorRef.current as any).getContent(),
+        category: category,
+        oav: onlyAuthorView,
+        gpt: useChatgpt,
+        noUserChat: gptOnlyMode,
+      })
+      .then((e) => {
+        if (e.status != 200)
+          return toast.update(toastId, {
+            render: "알수없는 오류가 발생하였어요.",
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        if (!e.data.s) {
+          let errorMessage = "알수없는 오류가 발생하였어요.";
+          if (e.data.e == -2) {
+            router.push(`/auth/signin`);
+            return;
+          } else if (e.data.e == -3)
+            errorMessage = "제목에서 욕설을 발견했어요. 제목을 수정해주세요.";
+          else if (e.data.e == -4)
+            errorMessage = "글에서 욕설을 발견했어요. 글을 수정해주세요.";
+          return toast.update(toastId, {
+            render: errorMessage,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+        }
+        router.push(`/community/n/${e.data.id}`);
+        toast.update(toastId, {
+          type: "success",
+          render: "성공적으로 업로드 했어요",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      });
+  };
+
   return (
     <>
       <Header type="MAIN" />
@@ -141,7 +183,10 @@ export default function New() {
             </span>
             <Switch
               value={onlyAuthorView}
-              onChange={(e) => SetOnlyAuthorView(e)}
+              onChange={(e) => {
+                SetOnlyAuthorView(e);
+                setGptOnlyMode(false);
+              }}
             />
 
             <span
@@ -151,72 +196,38 @@ export default function New() {
             >
               Chatgpt 사용
             </span>
-            <Switch value={useChatgpt} onChange={(e) => SetUseChatgpt(e)} />
+            <Switch
+              value={useChatgpt}
+              onChange={(e) => {
+                setUseChatgpt(e);
+                if (e == false) setGptOnlyMode(false);
+              }}
+            />
+
+            {category == 1 ? (
+              <>
+                <span
+                  style={{
+                    fontSize: "0.85em",
+                  }}
+                >
+                  개인 상담 모드
+                </span>
+                <Switch
+                  onChange={(e) => {
+                    setGptOnlyMode(e);
+                    setUseChatgpt(true);
+                    SetOnlyAuthorView(false);
+                  }}
+                  value={gptOnlyMode}
+                />
+              </>
+            ) : (
+              ""
+            )}
           </Garo>
           <Button
-            onClick={() => {
-              let toastId = toast.loading("전체 내용을 검사중이에요", {
-                autoClose: 10000,
-              });
-              axios
-                .post("/api/community/set", {
-                  title: title,
-                  content: (editorRef.current as any).getContent(),
-                  category: category,
-                  oav: onlyAuthorView,
-                  gpt: useChatgpt,
-                })
-                .then((e) => {
-                  if (e.status != 200)
-                    return toast.update(toastId, {
-                      render: "알수없는 오류가 발생하였어요.",
-                      type: "error",
-                      isLoading: false,
-                      autoClose: 3000,
-                    });
-                  if (!e.data.s) {
-                    if (e.data.e == -1)
-                      return toast.update(toastId, {
-                        render: "알수없는 오류가 발생하였어요.",
-                        type: "error",
-                        isLoading: false,
-                        autoClose: 3000,
-                      });
-                    else if (e.data.e == -2) {
-                      router.push(`/auth/signin`);
-                      return;
-                    } else if (e.data.e == -3)
-                      return toast.update(toastId, {
-                        render:
-                          "제목에서 욕설을 발견했어요. 제목을 수정해주세요.",
-                        type: "error",
-                        isLoading: false,
-                        autoClose: 3000,
-                      });
-                    else if (e.data.e == -4)
-                      return toast.update(toastId, {
-                        render: "글에서 욕설을 발견했어요. 글을 수정해주세요.",
-                        type: "error",
-                        isLoading: false,
-                        autoClose: 3000,
-                      });
-                    else
-                      return toast.update(toastId, {
-                        render: "알수없는 오류가 발생하였어요.",
-                        type: "error",
-                        isLoading: false,
-                        autoClose: 3000,
-                      });
-                  }
-                  router.push(`/community/n/${e.data.id}`);
-                  toast.update(toastId, {
-                    type: "success",
-                    render: "성공적으로 업로드 했어요",
-                    isLoading: false,
-                    autoClose: 3000,
-                  });
-                });
-            }}
+            onClick={onSubmit}
             css={{
               marginTop: "1rem",
             }}
