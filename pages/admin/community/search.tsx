@@ -7,16 +7,11 @@ import React, { useEffect, useState } from "react";
 import styles from "@/styles/postlist.module.css";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { GetServerSidePropsContext } from "next";
-import { Pagination } from "@/components/Pagination";
-import prismadb from "@/utils/prisma";
 import classNames from "@/utils/classNames";
 import optCSS from "@/utils/optCSS";
 import NoSSR from "react-no-ssr";
 import { Garo } from "@/components/Garo";
 import common from "@/styles/common.module.css";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../api/auth/[...nextauth]";
 import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import mypageStyle from "@/styles/auth/mypage.module.css";
@@ -47,6 +42,11 @@ interface Post {
   title: string;
   authorId: string;
   author: Author;
+  reports: Report[];
+}
+
+interface Report {
+  id: string;
 }
 
 interface Author {
@@ -69,6 +69,7 @@ for (let i = 0; i < 30; i++)
       nickname: "로딩중",
       age: 0,
     },
+    reports: [],
   });
 
 export default function Search() {
@@ -187,12 +188,13 @@ export default function Search() {
                 <td className={styles.td}>제목</td>
                 <td className={styles.td}>유저id</td>
                 <td className={styles.td}>닉네임</td>
+                <td className={styles.td}>신고</td>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
               {posts &&
                 posts.map((e, i) => {
-                  let href = `/community/n/${e.id}`;
+                  let href = `/admin/community/n/${e.id}`;
                   if (e.id == "로딩중") href = "/community";
                   if (e.id == "로딩중")
                     return (
@@ -206,6 +208,8 @@ export default function Search() {
                         <RandomSkeleton key={`td${i}a`} />
                         <RandomSkeleton key={`td${i}b`} />
                         <RandomSkeleton key={`td${i}c`} />
+                        <RandomSkeleton key={`td${i}d`} />
+                        <RandomSkeleton key={`td${i}e`} />
                       </tr>
                     );
                   return (
@@ -219,6 +223,7 @@ export default function Search() {
                       <td key={`td${i}b`}>{e.title}</td>
                       <td key={`td${i}c`}>{e.authorId}</td>
                       <td key={`td${i}d`}>{e.author.nickname}</td>
+                      <td key={`td${i}de`}>{e.reports.length}</td>
                     </tr>
                   );
                 })}

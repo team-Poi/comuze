@@ -20,6 +20,7 @@ import useModal from "@/utils/useModal";
 import { Flex } from "@/components/Flex";
 import { Switch } from "@/components/Switch";
 import { Saero } from "@/components/Saero";
+import { toast } from "react-toastify";
 
 function SkeletonP(props: { width: string }) {
   return (
@@ -151,6 +152,7 @@ export default function Search(props: { maxPage: number }) {
                 <td className={styles.td}>nickname</td>
                 <td className={styles.td}>학교 Id</td>
                 <td className={styles.td}>관리</td>
+                <td className={styles.td}>알림</td>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -170,6 +172,7 @@ export default function Search(props: { maxPage: number }) {
                         <RandomSkeleton key={`td${i}c`} />
                         <RandomSkeleton key={`td${i}d`} />
                         <RandomSkeleton key={`td${i}e`} />
+                        <RandomSkeleton key={`td${i}f`} />
                       </tr>
                     );
                   return (
@@ -335,6 +338,86 @@ export default function Search(props: { maxPage: number }) {
                           }}
                         >
                           관리
+                        </Button>
+                      </td>
+                      <td key={`td${i}f`}>
+                        <Button
+                          color="ERROR"
+                          onClick={() => {
+                            modal.addModal.modal({
+                              RenderChildren: (props) => {
+                                const [title, setTitle] = useState("");
+                                const [content, setContent] = useState("");
+                                return (
+                                  <div
+                                    style={{
+                                      padding: "1rem",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize: "1.25rem",
+                                      }}
+                                    >
+                                      유저 관리
+                                    </div>
+                                    <div
+                                      style={{
+                                        paddingTop: "1rem",
+                                      }}
+                                    />
+                                    <Saero gap={4}>
+                                      <Input
+                                        placeholder="제목"
+                                        value={title}
+                                        onChange={(e) =>
+                                          setTitle(e.currentTarget.value)
+                                        }
+                                      />
+                                      <Input
+                                        placeholder="글"
+                                        value={content}
+                                        onChange={(e) =>
+                                          setContent(e.currentTarget.value)
+                                        }
+                                      />
+                                    </Saero>
+                                    <div
+                                      style={{
+                                        paddingTop: "1rem",
+                                      }}
+                                    />
+                                    <Button
+                                      onClick={() => {
+                                        axios
+                                          .post("/api/alert", {
+                                            title: title,
+                                            content: content,
+                                            id: e.id,
+                                          })
+                                          .then((e) => {
+                                            if (e.data.s) {
+                                              toast.success(
+                                                "알림에 성공했어요!"
+                                              );
+                                              props.close();
+                                            } else {
+                                              toast.error(
+                                                "이런.. 알수없는 오류가 발생했어요.."
+                                              );
+                                            }
+                                          });
+                                      }}
+                                    >
+                                      보내기
+                                    </Button>
+                                  </div>
+                                );
+                              },
+                            });
+                          }}
+                        >
+                          알림
                         </Button>
                       </td>
                     </tr>
