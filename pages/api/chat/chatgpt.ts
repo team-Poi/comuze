@@ -1,8 +1,6 @@
 import prismadb from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import foods from "@/names/dict/foods";
-import prefix from "@/names/dict/prefix";
 import { authOptions } from "../auth/[...nextauth]";
 import { chatgpt } from "@/openai/gpt";
 export default async function handler(
@@ -23,7 +21,6 @@ export default async function handler(
     if (!session)
       return res.send({
         s: false,
-
         e: -2,
       });
 
