@@ -4,6 +4,7 @@ import CONSTANTS from "@/constants";
 import styles from "./Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import prismadb from "@/utils/prisma";
+import Link from "next/link";
 
 let messageLists = ["편리하게", "즐겁게", "행복하게", "신나게", "안전하게"];
 let messageAnimations: string[] = [messageLists[0]];
@@ -123,6 +124,25 @@ export default function Home(props: { userCount: number; postCount: number }) {
               노력하고 있어요.
             </h3>
           </section>
+        </Conatiner>
+      </div>
+      <div
+        className={styles.section}
+        style={{
+          background: "#f9f9f9",
+        }}
+      >
+        <Conatiner>
+          <h2>메뉴</h2>
+          <div
+            style={{
+              padding: "0px 1em",
+            }}
+          >
+            <Link href="/license">
+              <h3>라이선스</h3>
+            </Link>
+          </div>
         </Conatiner>
       </div>
     </>

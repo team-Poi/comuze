@@ -31,3 +31,8 @@ body::-webkit-scrollbar-thumb {
   --colors-highlight1: #ffed90;
   --colors-graylight1: #e2e2e2;
 }
+
+a {
+  text-decoration: none;
+  color: var(--POI-UI-INFO);
+}
