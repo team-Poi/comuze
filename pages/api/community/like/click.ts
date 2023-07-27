@@ -20,13 +20,13 @@ export default async function handler(
         s: false,
         e: -2,
       });
-    let post = await prismadb.like.findFirst({
+    let like = await prismadb.like.findFirst({
       where: {
         postID: parseInt(postId),
         authorID: session.user.id,
       },
     });
-    if (!post) {
+    if (!like) {
       await prismadb.like.create({
         data: {
           authorID: session.user.id,
@@ -41,7 +41,7 @@ export default async function handler(
     } else {
       await prismadb.like.delete({
         where: {
-          id: post.id,
+          id: like.id,
         },
       });
       return res.send({
