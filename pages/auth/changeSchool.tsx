@@ -146,7 +146,7 @@ function Step1(props: {
 function StepEnd() {
   return (
     <div>
-      <StepTitle>거의 다 됬어요!</StepTitle>
+      <StepTitle>거의 다 됐어요!</StepTitle>
       <StepDescription>
         서버에 데이터를 저장하는중이에요! 다 저장한후 마이페이지로 이동되요!
       </StepDescription>
