@@ -26,7 +26,7 @@ export default async function handler(
         data: [],
         e: -2,
       });
-    let post = await prismadb.post.findUnique({
+    let post = await prismadb.post.findFirst({
       where: {
         id: parseInt(postId as string),
       },
@@ -40,6 +40,7 @@ export default async function handler(
         },
       },
     });
+
     if (!post || !post.author || !post.author.age || !session.user.age)
       return res.send({
         s: false,
@@ -92,11 +93,13 @@ export default async function handler(
           cache[userID] = userName;
           hummanCnt++;
         }
+
         return {
           id: chat.id,
           isMine: chat.authorId == session.user.id,
           content: chat.content,
           authorName: userName,
+          isGptRecall: chat.isGptRecall,
         };
       }),
       isMine: post.authorId == session.user.id,
