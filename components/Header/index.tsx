@@ -6,9 +6,11 @@ import styles from "./style.module.css";
 import HomeType, { IconDefine } from "@/@types/homeType";
 import Link from "next/link";
 import CONSTANTS from "@/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Saero } from "../Saero";
 import { useSession } from "next-auth/react";
+import { useAlertBox } from "../AlertBox/context";
+import axios from "axios";
 
 interface HeaderProps {
   type?: HomeType;
@@ -17,9 +19,17 @@ interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
+  const [notifyCount, setNotifyCount] = useState(0);
   let [enabled, setEnabled] = useState(false);
   let { status, data } = useSession();
   const toggle = () => setEnabled((j) => !j);
+  const { open } = useAlertBox();
+
+  useEffect(() => {
+    axios("/api/alertcnt").then((e) => {
+      setNotifyCount(e.data.v);
+    });
+  }, []);
 
   return (
     <>
@@ -54,6 +64,27 @@ export default function Header(props: HeaderProps) {
           </div>
         </Link>
         <Garo gap={6}>
+          <div className={styles.menuToggle} onClick={() => open()}>
+            <Icon
+              icon="circle_notifications"
+              animated
+              size={40}
+              style={{
+                color: "var(--POI-UI-PRIMARY)",
+                ...({
+                  "--fill": "1",
+                  "--weight": "500",
+                } as any),
+              }}
+            />
+            {notifyCount > 0 ? (
+              <div className={styles.alertIcon}>
+                <span className={styles.alertCount}>{notifyCount}</span>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
           <div onClick={toggle} className={styles.menuToggle}>
             <Icon icon="menu" animated size={40} />
           </div>
@@ -79,7 +110,6 @@ export default function Header(props: HeaderProps) {
           </div>
         </Garo>
         <Saero>
-          {/* ㅇㅇ님 안녕하세요! */}
           <div className={styles.welcome}>
             <Garo>
               {data?.user.isAdmin === true ? (
