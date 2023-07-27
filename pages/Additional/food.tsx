@@ -3,8 +3,6 @@ import Header from "@/components/Header";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import NoSSR from "react-no-ssr";
-import styles from "./food.module.css";
-import { Loading } from "@/components/Loading";
 import { Saero } from "@/components/Saero";
 import { Garo } from "@/components/Garo";
 import axios from "axios";
