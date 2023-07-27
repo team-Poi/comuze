@@ -10,6 +10,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Head from "next/head";
 import { LoadingProvider } from "@/hooks/Loading";
+import { AlertProvider } from "@/components/AlertBox/context";
+import AlertBox from "@/components/AlertBox";
 
 function Wrapper({ Component, pageProps }: AppProps) {
   let { status, data } = useSession();
@@ -27,8 +29,11 @@ function Wrapper({ Component, pageProps }: AppProps) {
   return (
     <ModalProvider>
       <LoadingProvider>
-        <Component {...pageProps} />
-        <ToastContainer autoClose={3000} />
+        <AlertProvider>
+          <Component {...pageProps} />
+          <ToastContainer autoClose={3000} />
+          <AlertBox />
+        </AlertProvider>
       </LoadingProvider>
     </ModalProvider>
   );
