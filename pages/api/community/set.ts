@@ -17,12 +17,15 @@ export default async function handler(
     const category = req.body.category as number | null;
     const onlyAuthorView = req.body.oav as boolean | null;
     const gpt = req.body.gpt as boolean | null;
+    const gptOnly = req.body.noUserChat as boolean | null;
+
     if (
       !title ||
       !content ||
       !category ||
       typeof onlyAuthorView != "boolean" ||
-      typeof gpt != "boolean"
+      typeof gpt != "boolean" ||
+      typeof gptOnly != "boolean"
     )
       return res.send({
         s: false,
@@ -45,20 +48,25 @@ export default async function handler(
         authorId: session.user.id.toString(),
         categoryID: category,
         onlyAuthorChat: onlyAuthorView,
+        isGPTOnly: gptOnly,
       },
     });
+
+    res.status(200).send({
+      s: true,
+      id: x.id,
+    });
+
     if (gpt)
       await prisma.chat.create({
         data: {
           postID: x.id,
           authorId: "chatgpt",
           content: await chatgpt(x.content),
+          isGptRecall: true,
         },
       });
-    res.status(200).send({
-      s: true,
-      id: x.id,
-    });
+
     return;
   } catch (e) {
     return res.status(200).send({
