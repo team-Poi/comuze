@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./style.module.css";
 import { Garo } from "@/components/Garo";
 import { Icon } from "@/components/Icon";
@@ -11,6 +11,7 @@ export default function Item(props: {
   uploadAt: string;
 }) {
   const [disabled, setDisabled] = useState(false);
+  const removeing = useRef(false);
   return (
     <>
       {disabled ? (
@@ -31,11 +32,18 @@ export default function Item(props: {
                 animated
                 className={styles.delete}
                 onClick={() => {
-                  axios.delete("/api/alert?id=" + props.id).then((e) => {
-                    if (e.data.s) {
-                      setDisabled(true);
-                    }
-                  });
+                  if (removeing.current) return;
+                  removeing.current = true;
+                  axios
+                    .delete("/api/alert?id=" + props.id)
+                    .then((e) => {
+                      if (e.data.s) {
+                        setDisabled(true);
+                      }
+                    })
+                    .finally(() => {
+                      removeing.current = false;
+                    });
                 }}
               />
             </div>
