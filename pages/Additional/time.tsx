@@ -24,7 +24,7 @@ export default function Time() {
   for (let i = 0; i < maxLen; i++) {
     texts.push(
       <div
-        key={i}
+        key={i + "titem"}
         className={styles.timeNumber}
         style={{
           gridRow: i + 2,
@@ -80,7 +80,7 @@ export default function Time() {
                 .filter((j) => j.length > 0)
                 .map((a, j) => (
                   <div
-                    key={i}
+                    key={i + "item" + j}
                     className={styles.subjectItem}
                     style={{
                       borderRadius:
