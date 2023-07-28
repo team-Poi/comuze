@@ -6,6 +6,10 @@ import NoSSR from "react-no-ssr";
 import { Saero } from "@/components/Saero";
 import { Garo } from "@/components/Garo";
 import axios from "axios";
+import classNames from "@team.poi/ui/dist/cjs/utils/classNames";
+import common from "../../styles/error/error.module.css";
+
+const words = [`˙◠˙`, `ᴖ̈`, `(っ◞‸◟ c)`, `(ㅠ﹏ㅠ)`, `ꃋᴖꃋ`];
 
 let messages = ["오늘은 어떤 급식이 나올까요?", "오늘의 급식을 확인해봐요!"];
 
@@ -55,14 +59,22 @@ export default function Food() {
         </p>
         <Saero gap={8}>
           {foods.map((j, i) => (
-            <Containers key={i} value={j} />
+            <FoodItem key={i} value={j} />
           ))}
+          {foods.length == 0 && <><NoSSR>
+              <div className={classNames(common.errorFace, common.tcenter)}>
+                {words[Math.floor(Math.random() * words.length)]}
+              </div>
+            </NoSSR><h3 style={{
+            textAlign: "center"
+          }}>어.. 최근에 나올 급식이 나이스에 등록이 되있지 않아요.</h3></>}
+          
         </Saero>
       </Conatiner>
     </>
   );
 }
-function Containers(props: { value: Food }) {
+function FoodItem(props: { value: Food }) {
   return (
     <>
       <div
@@ -112,12 +124,4 @@ function Containers(props: { value: Food }) {
       </div>
     </>
   );
-}
-
-function Team(props: { poi?: boolean }) {
-  return <div></div>;
-}
-
-function I() {
-  return <Team poi />;
 }
