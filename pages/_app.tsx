@@ -13,6 +13,8 @@ import { LoadingProvider } from "@/hooks/Loading";
 import { AlertProvider } from "@/components/AlertBox/context";
 import AlertBox from "@/components/AlertBox";
 
+import { Analytics } from "@vercel/analytics/react";
+
 function Wrapper({ Component, pageProps }: AppProps) {
   let { status, data } = useSession();
   let router = useRouter();
@@ -30,6 +32,7 @@ function Wrapper({ Component, pageProps }: AppProps) {
     <ModalProvider>
       <LoadingProvider>
         <AlertProvider>
+          <Analytics />
           <Component {...pageProps} />
           <ToastContainer autoClose={3000} />
           <AlertBox />
