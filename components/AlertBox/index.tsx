@@ -45,10 +45,10 @@ export default function AlertBox() {
                     return (
                       <Item
                         key={i}
-                        title={e.data.title}
+                        title={JSON.parse(e.data).title}
                         desc={
                           <>
-                            <HTMLRenderer html={e.data.content} />
+                            <HTMLRenderer html={JSON.parse(e.data).content} />
                           </>
                         }
                         id={e.id}
