@@ -74,34 +74,30 @@ export default function Time() {
               </div>
             );
           })}
-          {times.map((t, i) => (
-            <>
-              {t
-                .filter((j) => j.length > 0)
-                .map((a, j) => (
-                  <div
-                    key={i + "item" + j}
-                    className={styles.subjectItem}
-                    style={{
-                      borderRadius:
-                        j == t.length - 1
-                          ? "0px 0px var(--radius) var(--radius)"
-                          : "",
-                      color: dt == i + 1 ? "#000" : "#aaa",
-                      gridRow: j + 2,
-                      gridColumn: i + 2,
-                      background: dt == i + 1 ? "var(--colors-highlight1)" : "",
-                    }}
-                  >
-                    {a
-                      .replace("주제선택활동", "주제 선택")
-                      .replace("진로탐색활동", "진로 탐색")
-                      .replace("예술·체육활동", "예술 체육활동")
-                      .replace("기술·가정", "기술 가정")}
-                  </div>
-                ))}
-            </>
-          ))}
+          {times.map((t, i) => {
+            return t.map((a, j) => (
+              <div
+                key={i + "item" + j}
+                className={styles.subjectItem}
+                style={{
+                  borderRadius:
+                    j == t.length - 1
+                      ? "0px 0px var(--radius) var(--radius)"
+                      : "",
+                  color: dt == i + 1 ? "#000" : "#aaa",
+                  gridRow: j + 2,
+                  gridColumn: i + 2,
+                  background: dt == i + 1 ? "var(--colors-highlight1)" : "",
+                }}
+              >
+                {a
+                  .replace("주제선택활동", "주제 선택")
+                  .replace("진로탐색활동", "진로 탐색")
+                  .replace("예술·체육활동", "예술 체육활동")
+                  .replace("기술·가정", "기술 가정")}
+              </div>
+            ));
+          })}
         </div>
       </Conatiner>
     </>
