@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { kensorship } from "@/openai/kensorship";
 import { authOptions } from "../auth/[...nextauth]";
 import { chatgpt } from "@/openai/gpt";
-import { deleteAlert, getAlert, sendAlert } from "@/utils/alert";
+import { deleteAlert, sendAlert } from "@/utils/alert";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,6 +17,7 @@ export default async function handler(
         e: -1,
         msg: "Something went wrong",
       });
+
     const session = await getServerSession(req, res, authOptions);
     if (!session)
       return res.send({
@@ -48,6 +49,7 @@ export default async function handler(
         s: false,
         e: -1,
       });
+
     if (!post.isGPTOnly) {
       if (Math.abs(post.author.age - session.user.age) >= 3)
         return res.send({
@@ -60,7 +62,9 @@ export default async function handler(
           s: false,
           e: -4,
         });
-    } else if (post.authorId != session.user.id)
+    }
+
+    if (post.authorId != session.user.id)
       return res.send({
         s: false,
         e: -5,
@@ -73,23 +77,23 @@ export default async function handler(
         content: content as string,
       },
     });
-    if (post.authorId != session.user.id) {
+
+    if (post.authorId != session.user.id)
       try {
         await deleteAlert({
           alertId: `_${post.authorId}_${post.id}`,
         });
+        await sendAlert({
+          type: 1,
+          data: {
+            postId: post.id,
+            title: post.title,
+            count: await prismadb.chat.count(),
+          },
+          userId: post.authorId,
+          alertId: `_${post.authorId}_${post.id}`,
+        });
       } catch (e) {}
-      await sendAlert({
-        type: 1,
-        data: {
-          postId: post.id,
-          title: post.title,
-          count: await prismadb.chat.count(),
-        },
-        userId: post.authorId,
-        alertId: `_${post.authorId}_${post.id}`,
-      });
-    }
 
     if (post.isGPTOnly)
       await prismadb.chat.create({
