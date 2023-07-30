@@ -61,14 +61,22 @@ export default function Food() {
           {foods.map((j, i) => (
             <FoodItem key={i} value={j} />
           ))}
-          {foods.length == 0 && <><NoSSR>
-              <div className={classNames(common.errorFace, common.tcenter)}>
-                {words[Math.floor(Math.random() * words.length)]}
-              </div>
-            </NoSSR><h3 style={{
-            textAlign: "center"
-          }}>어.. 최근에 나올 급식이 나이스에 등록이 되있지 않아요.</h3></>}
-          
+          {foods.length == 0 && (
+            <>
+              <NoSSR>
+                <div className={classNames(common.errorFace, common.tcenter)}>
+                  {words[Math.floor(Math.random() * words.length)]}
+                </div>
+              </NoSSR>
+              <h3
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                어.. 최근에 나올 급식이 나이스에 등록이 되있지 않아요.
+              </h3>
+            </>
+          )}
         </Saero>
       </Conatiner>
     </>
