@@ -205,6 +205,7 @@ export default function Page() {
     </>
   );
 }
+
 function Article(props: { title: string; date: any; link: string }) {
   return (
     <>
@@ -242,6 +243,7 @@ function Article(props: { title: string; date: any; link: string }) {
     </>
   );
 }
+
 function Item(props: { title: string; children: any }) {
   return (
     <>
@@ -261,6 +263,7 @@ function Item(props: { title: string; children: any }) {
     </>
   );
 }
+
 function Btn(props: {
   status: boolean;
   setStatus: SetState<boolean>;
@@ -294,6 +297,7 @@ function Btn(props: {
     </>
   );
 }
+
 function SchoolChange(props: { editing: boolean }) {
   let router = useRouter();
   let { data } = useSession();
