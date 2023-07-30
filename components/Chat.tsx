@@ -54,34 +54,77 @@ export default function Chat(props: {
       })
       .then((e) => {
         if (e.data.s == false) {
-          if (e.data.e == -1) toast.error("알수없는 오류가 발생했습니다.");
-          else if (e.data.e == -4)
-            return toast.update(t, {
-              render: "댓글에 욕설을 감지했어요. 글을 수정해주세요!",
-              autoClose: 3000,
-              type: "error",
-              isLoading: false,
+          switch (e.data.e) {
+            case -1:
+              toast.error("알수없는 오류가 발생했습니다.");
+              break;
+            case -4:
+              toast.update(t, {
+                render: "댓글에 욕설을 감지했어요. 글을 수정해주세요!",
+                autoClose: 3000,
+                type: "error",
+                isLoading: false,
+              });
+              break;
+          }
+
+          return;
+        }
+        toast.update(t, {
+          render: "댓글 작성에 성공하였습니다.",
+          autoClose: 3000,
+          type: "success",
+          isLoading: false,
+        });
+      })
+      .catch((e) => {
+        return toast.update(t, {
+          render: "알수없는 오류가 발생했습니다.",
+          autoClose: 3000,
+          type: "error",
+          isLoading: false,
+        });
+      })
+      .finally(async () => {
+        setInput("");
+        await refrash();
+      });
+  };
+
+  const chatRegen = (cid: string) => {
+    modal.addModal
+      .confirm({
+        title: "정말로 다시 생성하실 건가요?",
+        body: "다시 생성하면 기존 메시지는 볼수 없어요",
+        okayButton: "네",
+        cancelButton: "아니요",
+      })
+      .then((me) => {
+        if (me == "YES") {
+          let toastId = toast.loading("글을 생성하는중이에요.");
+          axios
+            .post("/api/chat/chatgpt", {
+              postId: props.postId,
+              chatId: cid,
+            })
+            .then((e) => {
+              if (!e.data.s)
+                return toast.update(toastId, {
+                  render: "알수없는 오류가 발생하였어요.",
+                  type: "error",
+                  isLoading: false,
+                  autoClose: 3000,
+                });
+              refrash();
+              return toast.update(toastId, {
+                render: "글 생성에 성공했어요!",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+              });
             });
-          else if (e.data.e == -2)
-            return; // -2는 로그인 안된상태 (커뮤 페이지에셔 먼저 핸들)
-          else if (e.data.e == -3) return; // 글쓴이와 나이가 조건이 안맞을때 (커뮤 페이지에셔 먼저 핸들)
-        } else {
-          setInput("");
-          return toast.update(t, {
-            render: "알수없는 오류가 발생했습니다.",
-            autoClose: 3000,
-            type: "error",
-            isLoading: false,
-          });
         }
       });
-    toast.update(t, {
-      render: "댓글 작성에 성공하였습니다.",
-      autoClose: 3000,
-      type: "success",
-      isLoading: false,
-    });
-    await refrash();
   };
 
   return (
@@ -149,7 +192,7 @@ export default function Chat(props: {
                       }}
                     >
                       <strong>{e.authorName}</strong>
-                      {e.authorName == "Chatgpt" ? (
+                      {e.authorName == "Chatgpt" && (
                         <>
                           <span
                             style={{
@@ -164,7 +207,7 @@ export default function Chat(props: {
                           >
                             Bot
                           </span>
-                          {props.isMine && e.isGptRecall ? (
+                          {props.isMine && e.isGptRecall && (
                             <button
                               className="gen-button"
                               style={{
@@ -175,52 +218,12 @@ export default function Chat(props: {
                                 borderRadius: "0.2rem",
                                 height: "19.1922px",
                               }}
-                              onClick={() => {
-                                modal.addModal
-                                  .confirm({
-                                    title: "정말로 다시 생성하실 건가요?",
-                                    body: "다시 생성하면 기존 메시지는 볼수 없어요",
-                                    okayButton: "네",
-                                    cancelButton: "아니요",
-                                  })
-                                  .then((me) => {
-                                    if (me == "YES") {
-                                      let toastId =
-                                        toast.loading("글을 생성하는중이에요.");
-                                      axios
-                                        .post("/api/chat/chatgpt", {
-                                          postId: props.postId,
-                                          chatId: e.id,
-                                        })
-                                        .then((e) => {
-                                          if (!e.data.s)
-                                            return toast.update(toastId, {
-                                              render:
-                                                "알수없는 오류가 발생하였어요.",
-                                              type: "error",
-                                              isLoading: false,
-                                              autoClose: 3000,
-                                            });
-                                          refrash();
-                                          return toast.update(toastId, {
-                                            render: "글 생성에 성공했어요!",
-                                            type: "success",
-                                            isLoading: false,
-                                            autoClose: 3000,
-                                          });
-                                        });
-                                    }
-                                  });
-                              }}
+                              onClick={() => chatRegen(e.id)}
                             >
                               다시 생성하기
                             </button>
-                          ) : (
-                            ""
                           )}
                         </>
-                      ) : (
-                        ""
                       )}
                     </Garo>
                   </div>
