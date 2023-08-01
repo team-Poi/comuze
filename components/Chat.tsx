@@ -29,9 +29,13 @@ export default function Chat(props: {
   useEffect(() => {
     refrash();
     // 일단 25초마다 새로고침하게 해뒀는데 문제 있을거같으면 삭재 ㄱㄱ
-    setInterval(async () => {
+    let inter = setInterval(async () => {
       await refrash();
     }, 25000);
+
+    return () => {
+      clearInterval(inter);
+    };
   }, [props.postId]);
 
   const refrash = async () => {
